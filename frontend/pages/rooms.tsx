@@ -1,145 +1,137 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Peer from "skyway-js";
 
 import { API_PATH, SKYWAY_API_KEY } from "./env";
 
 const Rooms = (props) => {
-  const getRoomModeByHash = () => (location.hash === "#sfu" ? "sfu" : "mesh");
+  const localStreamSetting = async () => {
+    localStreamRef.current.srcObject = await navigator.mediaDevices.getUserMedia(
+      {
+        audio: true,
+        video: true,
+      }
+    );
+    await localStreamRef.current.play();
+  };
 
-  const [roomMode, setRoomMode] = useState(getRoomModeByHash());
-  const [roomId, setRoomId] = useState("");
+  const localStreamRef = useRef<HTMLVideoElement>(null);
+  const remoteStreamRef = useRef<HTMLVideoElement>(null);
+
+  const [localId, setLocalId] = useState("");
   const [localVideoMuted, setLocalVideoMuted] = useState(true);
   const [localVideoPlaysInline, setLocalVideoPlaysInline] = useState(true);
-  const [localVideoMessages, setLocalVideoMessages] = useState("");
-  const peer = new Peer({ key: SKYWAY_API_KEY });
-  const joinHandler = async () => {
+
+  const [remoteId, setRemoteId] = useState("");
+  const [remoteVideoMuted, setRemoteVideoMuted] = useState(true);
+  const [remoteVideoPlaysInline, setRemoteVideoPlaysInline] = useState(false);
+
+  const [peer, setPeer] = useState(new Peer({ key: SKYWAY_API_KEY }));
+
+  const callTrigerClick = async () => {
     // Note that you need to ensure the peer has connected to signaling server
     // before using methods of peer instance.
     if (!peer.open) {
       return;
     }
 
-    const room = peer.joinRoom(roomId, {
-      mode: getRoomModeByHash(),
-      stream: await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: true,
-      }),
+    const mediaConnection =
+      localStreamRef.current.srcObject instanceof MediaStream
+        ? peer.call(remoteId, localStreamRef.current.srcObject)
+        : null;
+
+    mediaConnection.on("stream", async (stream: MediaStream) => {
+      // Render remote stream for caller
+      remoteStreamRef.current.srcObject = stream;
+      setRemoteVideoPlaysInline(true);
+      await remoteStreamRef.current.play().catch(console.error);
     });
 
-    room.once("open", () => {
-      setLocalVideoMessages(localVideoMessages + "=== You joined ===\n");
-    });
-    room.on("peerJoin", (peerId) => {
-      setLocalVideoMessages(localVideoMessages + `=== ${peerId} joined ===\n`);
-    });
-
-    // Render remote stream for new peer join in the room
-    room.on("stream", async (stream) => {
-      const newVideo = document.createElement("video");
-      newVideo.srcObject = stream;
-      setLocalVideoPlaysInline(true);
-      // mark peerId to find it later at peerLeave event
-      newVideo.setAttribute("data-peer-id", stream.peerId);
-      document.getElementById("remote-streams").append(newVideo);
-      await newVideo.play().catch(console.error);
+    mediaConnection.once("close", () => {
+      if (remoteStreamRef.current.srcObject instanceof MediaStream)
+        remoteStreamRef.current.srcObject
+          .getTracks()
+          .forEach((track) => track.stop());
+      remoteStreamRef.current.srcObject = null;
     });
 
-    room.on("data", ({ data, src }) => {
-      // Show a message sent to the room and who sent
-      setLocalVideoMessages(localVideoMessages + `${src}: ${data}\n`);
-    });
-
-    // for closing room members
-    room.on("peerLeave", (peerId) => {
-      const remoteVideo = document
-        .getElementById("remote-streams")
-        .querySelector(`[data-peer-id=${peerId}]`);
-      remoteVideo.srcObject.getTracks().forEach((track) => track.stop());
-      remoteVideo.srcObject = null;
-      remoteVideo.remove();
-      setLocalVideoMessages(localVideoMessages + `=== ${peerId} left ===\n`);
-    });
-
-    // for closing myself
-    room.once("close", () => {
-      sendTrigger.removeEventListener("click", onClickSend);
-      messages.textContent += "== You left ===\n";
-      Array.from(remoteVideos.children).forEach((remoteVideo) => {
-        remoteVideo.srcObject.getTracks().forEach((track) => track.stop());
-        remoteVideo.srcObject = null;
-        remoteVideo.remove();
-      });
-    });
-
-    sendTrigger.addEventListener("click", onClickSend);
-    leaveTrigger.addEventListener("click", () => room.close(), { once: true });
-
-    function onClickSend() {
-      // Send message to all of the peers in the room via websocket
-      room.send(localText.value);
-
-      messages.textContent += `${peer.id}: ${localText.value}\n`;
-      localText.value = "";
-    }
+    document
+      .getElementById("close-trigger")
+      .addEventListener("click", () => mediaConnection.close(true));
   };
 
-  useEffect(() => {
-    window.addEventListener("hashchange", () =>
-      setRoomMode(getRoomModeByHash())
-    );
-  }, []);
+  peer.once("open", (id: string) => setLocalId(id));
 
+  // Register callee handler
+  peer.on("call", (mediaConnection) => {
+    if (localStreamRef.current.srcObject instanceof MediaStream)
+      mediaConnection.answer(localStreamRef.current.srcObject);
+
+    mediaConnection.on("stream", async (stream) => {
+      // Render remote stream for callee
+      remoteStreamRef.current.srcObject = stream;
+      setRemoteVideoPlaysInline(true);
+      await remoteStreamRef.current.play().catch(console.error);
+    });
+
+    mediaConnection.once("close", () => {
+      if (remoteStreamRef.current.srcObject instanceof MediaStream)
+        remoteStreamRef.current.srcObject
+          .getTracks()
+          .forEach((track) => track.stop());
+      remoteStreamRef.current.srcObject = null;
+    });
+
+    document
+      .getElementById("close-trigger")
+      .addEventListener("click", () => mediaConnection.close(true));
+  });
+  peer.on("error", console.error);
+
+  useEffect(() => {
+    (async () => {
+      await localStreamSetting();
+    })();
+  }, []);
   return (
     <div>
       <div className="container">
         <h1 className="heading">Room Example タイトル</h1>
-        <div className="room">
-          <div>
+        <p className="note">Enter remote peer ID to call.</p>
+        <div className="p2p-media">
+          <div className="remote-stream">
             <video
-              id="local-stream"
+              id="video-remote-stream"
+              muted={remoteVideoMuted}
+              ref={remoteStreamRef}
+              playsInline={remoteVideoPlaysInline}
+            ></video>
+          </div>
+          <div className="local-stream">
+            <video
+              id="video-local-stream"
               muted={localVideoMuted}
-              ref={async (video) => {
-                // Cannot set property 'srcObject' of null問題
-                video.srcObject = await navigator.mediaDevices.getUserMedia({
-                  audio: true,
-                  video: true,
-                });
-                await video.play();
-              }}
+              ref={localStreamRef}
               playsInline={localVideoPlaysInline}
             ></video>
-            <span id="room-mode">{roomMode}</span>
+            <p>
+              Your ID: <span id="local-id">{localId}</span>
+            </p>
             <input
               type="text"
-              placeholder="Room Name"
-              id="room-id"
-              onChange={(e) => {
-                setRoomId(e.target.value);
-              }}
-            />
-            <button id="join-trigger" onClick={joinHandler}>
+              placeholder="Remote Peer ID"
+              id="remote-id"
+              onChange={(e) => setRemoteId(e.target.value)}
+            ></input>
+            <button id="call-trigger" onClick={callTrigerClick}>
               Join
             </button>
-            <button id="leave-trigger">Leave</button>
-          </div>
-          <div className="remote-streams" id="remote-streams"></div>
-          <div>
-            <pre className="messages" id="messages">
-              {localVideoMessages}
-            </pre>
-            <input type="text" id="local-text" />
-            <button id="send-trigger">Send</button>
+            <button id="close-trigger">Leave</button>
           </div>
         </div>
       </div>
       <ul></ul>
     </div>
   );
-};
-
-Rooms.getInitialProps = async ({ query }) => {
-  return 1;
 };
 
 export default Rooms;

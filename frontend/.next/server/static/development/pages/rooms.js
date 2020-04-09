@@ -88,7 +88,7 @@ module.exports =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -123,7 +123,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var skyway_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! skyway-js */ "skyway-js");
 /* harmony import */ var skyway_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(skyway_js__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _env__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./env */ "./pages/env.ts");
-var _jsxFileName = "/Users/yuzi/myprograming/next-todo/pages/rooms.tsx";
+var _jsxFileName = "/Users/yuzi/myprograming/we_wanna_eat_Jiro/frontend/pages/rooms.tsx";
 
 var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
 
@@ -131,15 +131,19 @@ var __jsx = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement;
 
 
 const Rooms = props => {
-  const getRoomModeByHash = () => location.hash === "#sfu" ? "sfu" : "mesh";
+  const localStreamSetting = async () => {
+    localStreamRef.current.srcObject = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: true
+    });
+    await localStreamRef.current.play();
+  };
 
+  const localStreamRef = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(null);
+  const remoteStreamRef = Object(react__WEBPACK_IMPORTED_MODULE_0__["useRef"])(null);
   const {
-    0: roomMode,
-    1: setRoomMode
-  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(getRoomModeByHash());
-  const {
-    0: roomId,
-    1: setRoomId
+    0: localId,
+    1: setLocalId
   } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])("");
   const {
     0: localVideoMuted,
@@ -150,89 +154,72 @@ const Rooms = props => {
     1: setLocalVideoPlaysInline
   } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(true);
   const {
-    0: localVideoMessages,
-    1: setLocalVideoMessages
+    0: remoteId,
+    1: setRemoteId
   } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])("");
-  const peer = new skyway_js__WEBPACK_IMPORTED_MODULE_1___default.a({
+  const {
+    0: remoteVideoMuted,
+    1: setRemoteVideoMuted
+  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(true);
+  const {
+    0: remoteVideoPlaysInline,
+    1: setRemoteVideoPlaysInline
+  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(false);
+  const {
+    0: peer,
+    1: setPeer
+  } = Object(react__WEBPACK_IMPORTED_MODULE_0__["useState"])(new skyway_js__WEBPACK_IMPORTED_MODULE_1___default.a({
     key: _env__WEBPACK_IMPORTED_MODULE_2__["SKYWAY_API_KEY"]
-  });
+  }));
 
-  const joinHandler = async () => {
+  const callTrigerClick = async () => {
     // Note that you need to ensure the peer has connected to signaling server
     // before using methods of peer instance.
     if (!peer.open) {
       return;
     }
 
-    const room = peer.joinRoom(roomId, {
-      mode: getRoomModeByHash(),
-      stream: await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: true
-      })
+    const mediaConnection = localStreamRef.current.srcObject instanceof MediaStream ? peer.call(remoteId, localStreamRef.current.srcObject) : null;
+    mediaConnection.on("stream", async stream => {
+      // Render remote stream for caller
+      remoteStreamRef.current.srcObject = stream;
+      setRemoteVideoPlaysInline(true);
+      await remoteStreamRef.current.play().catch(console.error);
     });
-    room.once("open", () => {
-      setLocalVideoMessages(localVideoMessages + "=== You joined ===\n");
+    mediaConnection.once("close", () => {
+      if (remoteStreamRef.current.srcObject instanceof MediaStream) remoteStreamRef.current.srcObject.getTracks().forEach(track => track.stop());
+      remoteStreamRef.current.srcObject = null;
     });
-    room.on("peerJoin", peerId => {
-      setLocalVideoMessages(localVideoMessages + `=== ${peerId} joined ===\n`);
-    }); // Render remote stream for new peer join in the room
-
-    room.on("stream", async stream => {
-      const newVideo = document.createElement("video");
-      newVideo.srcObject = stream;
-      setLocalVideoPlaysInline(true); // mark peerId to find it later at peerLeave event
-
-      newVideo.setAttribute("data-peer-id", stream.peerId);
-      document.getElementById("remote-streams").append(newVideo);
-      await newVideo.play().catch(console.error);
-    });
-    room.on("data", ({
-      data,
-      src
-    }) => {
-      // Show a message sent to the room and who sent
-      setLocalVideoMessages(localVideoMessages + `${src}: ${data}\n`);
-    }); // for closing room members
-
-    room.on("peerLeave", peerId => {
-      const remoteVideo = document.getElementById("remote-streams").querySelector(`[data-peer-id=${peerId}]`);
-      remoteVideo.srcObject.getTracks().forEach(track => track.stop());
-      remoteVideo.srcObject = null;
-      remoteVideo.remove();
-      setLocalVideoMessages(localVideoMessages + `=== ${peerId} left ===\n`);
-    }); // for closing myself
-
-    room.once("close", () => {
-      sendTrigger.removeEventListener("click", onClickSend);
-      messages.textContent += "== You left ===\n";
-      Array.from(remoteVideos.children).forEach(remoteVideo => {
-        remoteVideo.srcObject.getTracks().forEach(track => track.stop());
-        remoteVideo.srcObject = null;
-        remoteVideo.remove();
-      });
-    });
-    sendTrigger.addEventListener("click", onClickSend);
-    leaveTrigger.addEventListener("click", () => room.close(), {
-      once: true
-    });
-
-    function onClickSend() {
-      // Send message to all of the peers in the room via websocket
-      room.send(localText.value);
-      messages.textContent += `${peer.id}: ${localText.value}\n`;
-      localText.value = "";
-    }
+    document.getElementById("close-trigger").addEventListener("click", () => mediaConnection.close(true));
   };
 
+  peer.once("open", id => setLocalId(id)); // Register callee handler
+
+  peer.on("call", mediaConnection => {
+    if (localStreamRef.current.srcObject instanceof MediaStream) mediaConnection.answer(localStreamRef.current.srcObject);
+    mediaConnection.on("stream", async stream => {
+      // Render remote stream for callee
+      remoteStreamRef.current.srcObject = stream;
+      setRemoteVideoPlaysInline(true);
+      await remoteStreamRef.current.play().catch(console.error);
+    });
+    mediaConnection.once("close", () => {
+      if (remoteStreamRef.current.srcObject instanceof MediaStream) remoteStreamRef.current.srcObject.getTracks().forEach(track => track.stop());
+      remoteStreamRef.current.srcObject = null;
+    });
+    document.getElementById("close-trigger").addEventListener("click", () => mediaConnection.close(true));
+  });
+  peer.on("error", console.error);
   Object(react__WEBPACK_IMPORTED_MODULE_0__["useEffect"])(() => {
-    window.addEventListener("hashchange", () => setRoomMode(getRoomModeByHash()));
+    (async () => {
+      await localStreamSetting();
+    })();
   }, []);
   return __jsx("div", {
     __self: undefined,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 94,
+      lineNumber: 96,
       columnNumber: 5
     }
   }, __jsx("div", {
@@ -240,7 +227,7 @@ const Rooms = props => {
     __self: undefined,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 95,
+      lineNumber: 97,
       columnNumber: 7
     }
   }, __jsx("h1", {
@@ -248,150 +235,128 @@ const Rooms = props => {
     __self: undefined,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 96,
-      columnNumber: 9
-    }
-  }, "Room Example \u30BF\u30A4\u30C8\u30EB"), __jsx("div", {
-    className: "room",
-    __self: undefined,
-    __source: {
-      fileName: _jsxFileName,
-      lineNumber: 97,
-      columnNumber: 9
-    }
-  }, __jsx("div", {
-    __self: undefined,
-    __source: {
-      fileName: _jsxFileName,
       lineNumber: 98,
-      columnNumber: 11
+      columnNumber: 9
     }
-  }, __jsx("video", {
-    id: "local-stream",
-    muted: localVideoMuted,
-    ref: async video => {
-      // Cannot set property 'srcObject' of null問題
-      video.srcObject = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: true
-      });
-      await video.play();
-    },
-    playsInline: localVideoPlaysInline,
+  }, "Room Example \u30BF\u30A4\u30C8\u30EB"), __jsx("p", {
+    className: "note",
     __self: undefined,
     __source: {
       fileName: _jsxFileName,
       lineNumber: 99,
-      columnNumber: 13
+      columnNumber: 9
     }
-  }), __jsx("span", {
-    id: "room-mode",
+  }, "Enter remote peer ID to call."), __jsx("div", {
+    className: "p2p-media",
     __self: undefined,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 112,
+      lineNumber: 100,
+      columnNumber: 9
+    }
+  }, __jsx("div", {
+    className: "remote-stream",
+    __self: undefined,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 101,
+      columnNumber: 11
+    }
+  }, __jsx("video", {
+    id: "video-remote-stream",
+    muted: remoteVideoMuted,
+    ref: remoteStreamRef,
+    playsInline: remoteVideoPlaysInline,
+    __self: undefined,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 102,
       columnNumber: 13
     }
-  }, roomMode), __jsx("input", {
+  })), __jsx("div", {
+    className: "local-stream",
+    __self: undefined,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 109,
+      columnNumber: 11
+    }
+  }, __jsx("video", {
+    id: "video-local-stream",
+    muted: localVideoMuted,
+    ref: localStreamRef,
+    playsInline: localVideoPlaysInline,
+    __self: undefined,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 110,
+      columnNumber: 13
+    }
+  }), __jsx("p", {
+    __self: undefined,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 116,
+      columnNumber: 13
+    }
+  }, "Your ID: ", __jsx("span", {
+    id: "local-id",
+    __self: undefined,
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 117,
+      columnNumber: 24
+    }
+  }, localId)), __jsx("input", {
     type: "text",
-    placeholder: "Room Name",
-    id: "room-id",
-    onChange: e => {
-      setRoomId(e.target.value);
-    },
+    placeholder: "Remote Peer ID",
+    id: "remote-id",
+    onChange: e => setRemoteId(e.target.value),
     __self: undefined,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 113,
+      lineNumber: 119,
       columnNumber: 13
     }
   }), __jsx("button", {
-    id: "join-trigger",
-    onClick: joinHandler,
+    id: "call-trigger",
+    onClick: callTrigerClick,
     __self: undefined,
     __source: {
       fileName: _jsxFileName,
-      lineNumber: 121,
+      lineNumber: 125,
       columnNumber: 13
     }
   }, "Join"), __jsx("button", {
-    id: "leave-trigger",
-    __self: undefined,
-    __source: {
-      fileName: _jsxFileName,
-      lineNumber: 124,
-      columnNumber: 13
-    }
-  }, "Leave")), __jsx("div", {
-    className: "remote-streams",
-    id: "remote-streams",
-    __self: undefined,
-    __source: {
-      fileName: _jsxFileName,
-      lineNumber: 126,
-      columnNumber: 11
-    }
-  }), __jsx("div", {
-    __self: undefined,
-    __source: {
-      fileName: _jsxFileName,
-      lineNumber: 127,
-      columnNumber: 11
-    }
-  }, __jsx("pre", {
-    className: "messages",
-    id: "messages",
+    id: "close-trigger",
     __self: undefined,
     __source: {
       fileName: _jsxFileName,
       lineNumber: 128,
       columnNumber: 13
     }
-  }, localVideoMessages), __jsx("input", {
-    type: "text",
-    id: "local-text",
-    __self: undefined,
-    __source: {
-      fileName: _jsxFileName,
-      lineNumber: 131,
-      columnNumber: 13
-    }
-  }), __jsx("button", {
-    id: "send-trigger",
+  }, "Leave")))), __jsx("ul", {
     __self: undefined,
     __source: {
       fileName: _jsxFileName,
       lineNumber: 132,
-      columnNumber: 13
-    }
-  }, "Send")))), __jsx("ul", {
-    __self: undefined,
-    __source: {
-      fileName: _jsxFileName,
-      lineNumber: 136,
       columnNumber: 7
     }
   }));
-};
-
-Rooms.getInitialProps = async ({
-  query
-}) => {
-  return 1;
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (Rooms);
 
 /***/ }),
 
-/***/ 5:
+/***/ 6:
 /*!*******************************!*\
   !*** multi ./pages/rooms.tsx ***!
   \*******************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/yuzi/myprograming/next-todo/pages/rooms.tsx */"./pages/rooms.tsx");
+module.exports = __webpack_require__(/*! /Users/yuzi/myprograming/we_wanna_eat_Jiro/frontend/pages/rooms.tsx */"./pages/rooms.tsx");
 
 
 /***/ }),
