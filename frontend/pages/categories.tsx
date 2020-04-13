@@ -24,10 +24,16 @@ const Categories = (props: CategoryProps) => {
               <div>管理者: {room.admin}</div>
               <div>説明: {room.description}</div>
               <Link
-                href={{ pathname: "/rooms", query: { index: `${room.id}` } }}
+                href={{ pathname: "/room", query: { index: `${room.id}` } }}
                 as={"/room"}
               >
                 <a>部屋に入る</a>
+              </Link>
+              <Link
+                href={{ pathname: "/chat", query: { index: `${room.id}` } }}
+                as={"/chat"}
+              >
+                <a>二人でチャットする(消去予定)</a>
               </Link>
             </li>
           );
