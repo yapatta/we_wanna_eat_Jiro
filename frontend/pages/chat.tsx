@@ -3,7 +3,7 @@ import Peer from "skyway-js";
 
 import { API_PATH, SKYWAY_API_KEY } from "./env";
 
-const Rooms = (props) => {
+const Chat = (props) => {
   const localStreamSetting = async () => {
     localStreamRef.current.srcObject = await navigator.mediaDevices.getUserMedia(
       {
@@ -12,6 +12,14 @@ const Rooms = (props) => {
       }
     );
     await localStreamRef.current.play();
+  };
+
+  const localStreamOff = () => {
+    if (localStreamRef.current.srcObject instanceof MediaStream) {
+      localStreamRef.current.srcObject
+        .getTracks()
+        .forEach((track) => track.stop());
+    }
   };
 
   const localStreamRef = useRef<HTMLVideoElement>(null);
@@ -27,10 +35,15 @@ const Rooms = (props) => {
 
   const [peer, setPeer] = useState(new Peer({ key: SKYWAY_API_KEY }));
 
+  window.addEventListener("popstate", (e) => {
+    localStreamOff();
+  });
+
   const callTrigerClick = async () => {
     // Note that you need to ensure the peer has connected to signaling server
     // before using methods of peer instance.
     if (!peer.open) {
+      // FIXME: 通話相手がいない的な旨の処理を表示
       return;
     }
 
@@ -47,10 +60,11 @@ const Rooms = (props) => {
     });
 
     mediaConnection.once("close", () => {
-      if (remoteStreamRef.current.srcObject instanceof MediaStream)
+      if (remoteStreamRef.current.srcObject instanceof MediaStream) {
         remoteStreamRef.current.srcObject
           .getTracks()
           .forEach((track) => track.stop());
+      }
       remoteStreamRef.current.srcObject = null;
     });
 
@@ -63,8 +77,9 @@ const Rooms = (props) => {
 
   // Register callee handler
   peer.on("call", (mediaConnection) => {
-    if (localStreamRef.current.srcObject instanceof MediaStream)
+    if (localStreamRef.current.srcObject instanceof MediaStream) {
       mediaConnection.answer(localStreamRef.current.srcObject);
+    }
 
     mediaConnection.on("stream", async (stream) => {
       // Render remote stream for callee
@@ -74,10 +89,11 @@ const Rooms = (props) => {
     });
 
     mediaConnection.once("close", () => {
-      if (remoteStreamRef.current.srcObject instanceof MediaStream)
+      if (remoteStreamRef.current.srcObject instanceof MediaStream) {
         remoteStreamRef.current.srcObject
           .getTracks()
           .forEach((track) => track.stop());
+      }
       remoteStreamRef.current.srcObject = null;
     });
 
@@ -127,11 +143,17 @@ const Rooms = (props) => {
             </button>
             <button id="close-trigger">Leave</button>
           </div>
+          <button
+            onClick={() => {
+              history.back();
+            }}
+          >
+            前のページに戻る
+          </button>
         </div>
       </div>
-      <ul></ul>
     </div>
   );
 };
 
-export default Rooms;
+export default Chat;
