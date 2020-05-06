@@ -1,45 +1,36 @@
+import React from "react";
 import fetch from "isomorphic-unfetch";
-import Link from "next/link";
 import { API_PATH } from "./env";
+import Layout from "../components/layout";
+import CategoryCard from "../components/categoryCard";
+import { Grid } from "@material-ui/core";
 
 interface AppProps {
   categories: Category[];
 }
 
 interface Category {
-  id: number;
+  cid: number;
   name: string;
 }
 
-const App = (props: AppProps) => {
+const Index = (props: AppProps) => {
   return (
-    <div>
-      <h1>オンライン飲み会やろうぜ！！</h1>
-      <ul>
+    <Layout>
+      <Grid container>
         {props.categories.map((category: Category, index: number) => {
-          return (
-            <li key={index}>
-              <Link
-                href={{
-                  pathname: "/categories",
-                  query: { index: `${category.id}` },
-                }}
-                as={"/categories"}
-              >
-                <a>{category.name}</a>
-              </Link>
-            </li>
-          );
+          return <CategoryCard>{category}</CategoryCard>;
         })}
-      </ul>
-    </div>
+      </Grid>
+    </Layout>
   );
 };
 
-App.getInitialProps = async ({ req }) => {
+Index.getInitialProps = async ({ req }) => {
   // ルームの全てのカテゴリを取得
   const res = await fetch(API_PATH + "/categories");
   const categories: Category[] = await res.json();
   return { categories };
 };
-export default App;
+
+export default Index;

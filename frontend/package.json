@@ -2,7 +2,6 @@
   "name": "next-todo",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "dev": "next",
     "build": "next build",
@@ -13,14 +12,22 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@material-ui/core": "^4.9.13",
+    "@material-ui/icons": "^4.9.1",
+    "clsx": "^1.1.0",
     "isomorphic-unfetch": "^3.0.0",
-    "next": "^9.3.4",
+    "jss": "^10.1.1",
+    "next": "^9.3.6",
+    "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-jss": "^10.1.1",
     "skyway-js": "^2.0.5"
   },
   "devDependencies": {
+    "@types/next": "^9.0.0",
     "@types/node": "^13.11.0",
+    "@types/react-dom": "^16.9.7",
     "@types/react": "^16.9.32",
     "typescript": "^3.8.3"
   }
