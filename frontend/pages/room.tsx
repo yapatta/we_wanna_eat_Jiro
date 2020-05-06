@@ -2,8 +2,21 @@ import { useState, useEffect, useRef } from "react";
 import Peer, { RoomStream } from "skyway-js";
 
 import { API_PATH, SKYWAY_API_KEY } from "./env";
+import Layout from "../components/layout";
+import { Grid, makeStyles, Button } from "@material-ui/core";
+
+const useStyles = makeStyles({
+  myVideo: {},
+  remoteStreams: {
+    display: "flex",
+    flexWrap: "wrap",
+  },
+});
 
 const Room = (props) => {
+  const classes = useStyles();
+
+  const jsLocalStream = document.getElementById("js-local-stream");
   const jsRemoteStream = document.getElementById("js-remote-streams");
   const jsSendTrigger = document.getElementById("js-send-trigger");
   const jsLeaveTrigger = document.getElementById("js-leave-trigger");
@@ -22,11 +35,13 @@ const Room = (props) => {
   };
 
   const localStreamOff = () => {
-    // FIXME: ローカルストリームを複数回オン, オフにしたとき, localStreamのsrcObjectがnullになって落ちる
-    if (localStreamRef.current.srcObject instanceof MediaStream) {
-      localStreamRef.current.srcObject
-        .getTracks()
-        .forEach((track) => track.stop());
+    // ローカルストリームを複数回オン, オフにしたとき, current = nullになるため
+    if (localStreamRef.current) {
+      if (localStreamRef.current.srcObject instanceof MediaStream) {
+        localStreamRef.current.srcObject
+          .getTracks()
+          .forEach((track) => track.stop());
+      }
     }
   };
 
@@ -43,8 +58,6 @@ const Room = (props) => {
   });
 
   const joinTroggerClick = async () => {
-    // Note that you need to ensure the peer has connected to signaling server
-    // before using methods of peer instance.
     if (!peer.open) {
       // FIXME: 通話相手がいない的な旨の処理を表示
       return;
@@ -68,8 +81,8 @@ const Room = (props) => {
     room.on("stream", async (stream) => {
       const newVideo = document.createElement("video");
       newVideo.srcObject = stream;
-      // newVideo.playsInline = true;
       newVideo.setAttribute("data-peer-id", stream.peerId);
+      newVideo.setAttribute("width", "25%");
       jsRemoteStream.append(newVideo);
       await newVideo.play().catch(console.error);
     });
@@ -85,12 +98,14 @@ const Room = (props) => {
         `[data-peer-id=${peerId}]`
       );
 
-      if (remoteVideo.srcObject instanceof MediaStream) {
-        remoteVideo.srcObject.getTracks().forEach((track) => track.stop());
+      if (remoteVideo.id !== "js-local-stream") {
+        if (remoteVideo.srcObject instanceof MediaStream) {
+          remoteVideo.srcObject.getTracks().forEach((track) => track.stop());
+        }
+        remoteVideo.srcObject = null;
+        remoteVideo.remove();
+        setRoomMessages(roomMessages + `=== ${peerId} left ===\n`);
       }
-      remoteVideo.srcObject = null;
-      remoteVideo.remove();
-      setRoomMessages(roomMessages + `=== ${peerId} left ===\n`);
     });
 
     // for closing myself
@@ -99,11 +114,15 @@ const Room = (props) => {
       setRoomMessages(roomMessages + "== You left ===\n");
       Array.from(jsRemoteStream.children).forEach(
         (remoteVideo: HTMLVideoElement) => {
-          if (remoteVideo.srcObject instanceof MediaStream) {
-            remoteVideo.srcObject.getTracks().forEach((track) => track.stop());
+          if (remoteVideo.id !== "js-local-stream") {
+            if (remoteVideo.srcObject instanceof MediaStream) {
+              remoteVideo.srcObject
+                .getTracks()
+                .forEach((track) => track.stop());
+            }
+            remoteVideo.srcObject = null;
+            remoteVideo.remove();
           }
-          remoteVideo.srcObject = null;
-          remoteVideo.remove();
         }
       );
     });
@@ -128,7 +147,7 @@ const Room = (props) => {
     })();
   }, []);
   return (
-    <div>
+    <Layout>
       <div className="container">
         <h1 className="heading">Room example</h1>
         <p className="note">
@@ -136,28 +155,32 @@ const Room = (props) => {
           <a href="#">mesh</a> / <a href="#sfu">sfu</a>
         </p>
         <div className="room">
-          <div>
+          <div className={classes.myVideo}></div>
+          <div className={classes.remoteStreams} id="js-remote-streams">
             <video
               id="js-local-stream"
               muted
               ref={localStreamRef}
               playsInline
+              width="25%"
             ></video>
-            <span id="js-room-mode">{roomMode}</span>:
-            <input
-              type="text"
-              placeholder="Room Name"
-              id="js-room-id"
-              onChange={(e) => setRoomId(e.target.value)}
-            />
-            <button id="js-join-trigger" onClick={joinTroggerClick}>
-              Join
-            </button>
-            <button id="js-leave-trigger">Leave</button>
           </div>
-
-          <div className="remote-streams" id="js-remote-streams"></div>
-
+          <span id="js-room-mode">{roomMode}</span>:
+          <input
+            type="text"
+            placeholder="Room Name"
+            id="js-room-id"
+            onChange={(e) => setRoomId(e.target.value)}
+          />
+          <Button
+            variant="contained"
+            id="js-join-trigger"
+            color="primary"
+            onClick={joinTroggerClick}
+          >
+            Join
+          </Button>
+          <Button id="js-leave-trigger">Leave</Button>
           <div>
             <pre className="messages" id="js-messages">
               {roomMessages}
@@ -172,9 +195,16 @@ const Room = (props) => {
             />
             <button id="js-send-trigger">Send</button>
           </div>
+          <button
+            onClick={() => {
+              history.back();
+            }}
+          >
+            前のページに戻る
+          </button>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

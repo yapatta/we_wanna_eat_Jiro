@@ -1,9 +1,12 @@
 import fetch from "isomorphic-unfetch";
 import Link from "next/link";
 import { API_PATH } from "./env";
+import Layout from "../components/layout";
+import RoomCard from "../components/roomCard";
+import { Grid } from "@material-ui/core";
 
 interface Room {
-  id: number;
+  rid: number;
   name: string;
   admin: string;
   description: string;
@@ -15,34 +18,16 @@ interface CategoryProps {
 
 const Categories = (props: CategoryProps) => {
   return (
-    <div>
-      <ul>
+    <Layout>
+      <Grid container>
         {props.rooms.map((room: Room, index: number) => {
-          return (
-            <li key={index}>
-              <div>名前: {room.name}</div>
-              <div>管理者: {room.admin}</div>
-              <div>説明: {room.description}</div>
-              <Link
-                href={{ pathname: "/room", query: { index: `${room.id}` } }}
-                as={"/room"}
-              >
-                <a>部屋に入る</a>
-              </Link>
-              <Link
-                href={{ pathname: "/chat", query: { index: `${room.id}` } }}
-                as={"/chat"}
-              >
-                <a>二人でチャットする(消去予定)</a>
-              </Link>
-            </li>
-          );
+          return <RoomCard>{room}</RoomCard>;
         })}
-      </ul>
+      </Grid>
       <Link href="/">
         <a>ホームに戻る</a>
       </Link>
-    </div>
+    </Layout>
   );
 };
 
