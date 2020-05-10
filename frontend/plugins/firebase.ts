@@ -3,13 +3,14 @@ import firebase from 'firebase';
 
 if (!firebase.apps.length) {
     firebase.initializeApp({
-        apiKey: 'AIzaSyBCTUDGs3SAzmBQUOv-kQq7s_PYaWOpdio',
-        authDomain: 'pj-marowd.firebaseapp.com',
-        databaseURL: 'https://pj-marowd.firebaseio.com',
-        projectId: 'pj-marowd',
-        storageBucket: 'pj-marowd.appspot.com',
-        messagingSenderId: '878555019849',
-        appId: '1:878555019849:web:22d4242096f12135'
+        apiKey: "AIzaSyA6_jk6DTjAYoVlmxHnpnTs-lfblbRPpic",
+        authDomain: "we-wanna-eat-jiro.firebaseapp.com",
+        databaseURL: "https://we-wanna-eat-jiro.firebaseio.com",
+        projectId: "we-wanna-eat-jiro",
+        storageBucket: "we-wanna-eat-jiro.appspot.com",
+        messagingSenderId: "708654749698",
+        appId: "1:708654749698:web:0ec9b6b9a9f14bc5dcef1b",
+        measurementId: "G-W7G2C5MWV0"
     });
 }
 

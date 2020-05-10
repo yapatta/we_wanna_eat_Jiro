@@ -13,16 +13,38 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "firebase": "^7.14.2",
+    "firebase": "^7.14.3",
     "isomorphic-unfetch": "^3.0.0",
-    "next": "^9.3.4",
+    "next": "^9.3.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "skyway-js": "^2.0.5"
   },
   "devDependencies": {
-    "@types/node": "^13.11.0",
-    "@types/react": "^16.9.32",
+    "@types/jest": "^25.2.1",
+    "@types/node": "^13.13.5",
+    "@types/react": "^16.9.34",
+    "jest": "^26.0.1",
+    "jest-environment-uint8array": "^1.0.0",
+    "ts-jest": "^25.5.1",
     "typescript": "^3.8.3"
+  },
+  "jest": {
+    "testEnvironment": "jest-environment-uint8array",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "tsconfig.json"
+      }
+    },
+    "testMatch": [
+      "**/*.test.ts"
+    ]
   }
 }
