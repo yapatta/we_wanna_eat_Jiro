@@ -1,4 +1,5 @@
 import {categories, rooms} from "./index";
+import DocumentData = firebase.firestore.DocumentData;
 
 
 describe('categories が動作すること。', () => {
@@ -17,8 +18,7 @@ describe('categories が動作すること。', () => {
 
 describe('rooms が動作すること。', () => {
     test('データ数テスト', async () => {
-        const j = await rooms(1);
-        console.log(j);
+        const rs = await (await rooms(2)).get();
+        expect(rs.docs.length).toEqual(2);
     })
-
 })
