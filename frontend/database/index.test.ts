@@ -1,4 +1,4 @@
-import {categories} from "./index";
+import {categories, rooms} from "./index";
 
 
 describe('categories が動作すること。', () => {
@@ -11,6 +11,14 @@ describe('categories が動作すること。', () => {
         })
 
         expect(docs.docs.length).toEqual(2);
+    })
+
+})
+
+describe('rooms が動作すること。', () => {
+    test('データ数テスト', async () => {
+        const j = await rooms(1);
+        console.log(j);
     })
 
 })
