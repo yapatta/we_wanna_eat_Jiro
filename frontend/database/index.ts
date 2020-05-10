@@ -8,5 +8,5 @@ export const categories = async () => {
 
 export const rooms = async (cid: number) => {
     const db = firebase.firestore();
-    return db.collection('categories').doc(`${cid}`).get();
+    return db.collection('categories').doc(`${cid}`).collection('rooms');
 }
