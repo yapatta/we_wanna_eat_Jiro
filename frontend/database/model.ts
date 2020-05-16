@@ -1,4 +1,4 @@
-export interface Room{
+export interface RoomDocument {
     name: string;
     admin_uid: string;
     admin: string;
@@ -6,7 +6,7 @@ export interface Room{
     users: string[];
 }
 
-export interface User {
+export interface UserDocument {
     uid: string;
     nickname: string;
     introduction: string;

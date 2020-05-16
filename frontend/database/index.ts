@@ -1,32 +1,32 @@
 import firebase from './../plugins/firebase'
-import {Room, User} from "./model";
+import {RoomDocument, UserDocument} from "./model";
 
 
-export const categories = async () => {
+export const selectCategories = async () => {
     const db = firebase.firestore();
     return db.collection('categories');
 }
 
-export const rooms = async (cid: number) => {
+export const selectRoomDocument = async (cid: number) => {
     const db = firebase.firestore();
-    return db.collection('categories').doc(`${cid}`).collection('rooms');
+    return db.collection('categories').doc(`${cid}`).collection('room');
 }
 
-export const createRoom = async (cid: number,room: Room) => {
+export const insertRoomDocument = async (cid: number,RoomDocument: RoomDocument) => {
     const db = firebase.firestore();
-    await db.collection('categories').doc(`${cid}`).collection('rooms').add(room);
+    await db.collection('categories').doc(`${cid}`).collection('room').add(RoomDocument);
 }
 
-export const joinRoom = async (cid: number,docId: string,user: User) => {
+export const updateRoomDocumentWhenJoined = async (cid: number,docId: string,UserDocument: UserDocument) => {
     const db = firebase.firestore();
-    await db.collection('categories').doc(`${cid}`).collection('rooms').doc(docId).update({
-        users: firebase.firestore.FieldValue.arrayUnion(user)
+    await db.collection('categories').doc(`${cid}`).collection('room').doc(docId).update({
+        users: firebase.firestore.FieldValue.arrayUnion(UserDocument)
     });
 }
 
-export const leaveRoom = async (cid: number,docId: string,user: User) => {
+export const updateRoomDocumentWhenLeaved = async (cid: number,docId: string,UserDocument: UserDocument) => {
     const db = firebase.firestore();
-    await db.collection('categories').doc(`${cid}`).collection('rooms').doc(docId).update({
-        users: firebase.firestore.FieldValue.arrayRemove(user)
+    await db.collection('categories').doc(`${cid}`).collection('room').doc(docId).update({
+        users: firebase.firestore.FieldValue.arrayRemove(UserDocument)
     });
 }
