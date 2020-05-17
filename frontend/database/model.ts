@@ -12,3 +12,9 @@ export interface UserDocument {
     introduction: string;
     evaluation: number;
 }
+
+export interface CategoryDocument {
+    cid: number;
+    name: string;
+    description: string;
+}
