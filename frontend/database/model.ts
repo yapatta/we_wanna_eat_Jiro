@@ -17,4 +17,5 @@ export interface CategoryDocument {
     cid: number;
     name: string;
     description: string;
+    rooms: RoomDocument[];
 }

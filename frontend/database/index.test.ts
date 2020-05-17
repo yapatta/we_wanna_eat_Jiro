@@ -1,10 +1,32 @@
 import {
     selectCategories,
     selectRoomDocument,
-    insertRoomDocument, updateRoomDocumentWhenLeaved, updateRoomDocumentWhenJoined
+    insertRoomDocument,
+    updateRoomDocumentWhenLeaved,
+    updateRoomDocumentWhenJoined,
+    _insertCategoryDocument,
+    selectCategory
 } from "./index";
 import DocumentData = firebase.firestore.DocumentData;
-import {RoomDocument} from "./model";
+import {CategoryDocument, RoomDocument} from "./model";
+
+
+const developers = ['8yIhMQblMofewsdeX1heNEbsoop2','KmIfPpsbS3h91ddQxcc8EgH3DOm2','VtEbFaaE0fY5n0EoMtFt9KzIqBg2','tCwhq7mRfpSU18eNo6lA0R3wj9F3'];
+
+const  getRandomInt = (max) => {
+    return Math.floor(Math.random() * Math.floor(max));
+};
+
+const createTestRoomDocument = async () => {
+    const v = getRandomInt(developers.length);
+    return {
+        name: `ラーメン二郎 ${v}号店`,
+        admin: `developer[${v}]`,
+        admin_uid: developers[v],
+        description: "ニンニクヤサイアブラな人募集中！",
+        users: []
+    };
+};
 
 /**
  * 動作確認用のテストメソッドです。これらはdbとの疎通テスト用に使われます。
@@ -39,14 +61,7 @@ describe('RoomDocumentの作成メソッド insertRoomDocument  が動作する�
     const MAX_CATEGORIES = 2;
     for (let i = 0; i < MAX_CATEGORIES; ++i) {
         test('投稿テスト', async () => {
-            const roomDocument: RoomDocument = {
-                name: "test_RoomDocument",
-                admin: "test_admin",
-                admin_uid: "test_uid",
-                description: "test_description",
-                users: []
-            };
-            const ret = await insertRoomDocument(i, roomDocument);
+            const ret = await insertRoomDocument(i,await createTestRoomDocument());
             // ret.idでDocumentのidを取得できます。
             console.log(ret.id)
         });
@@ -77,3 +92,37 @@ describe('人間の退出メソッド updateRoomDocumentWhenLeavedが動作す�
 });
 
 
+/**
+ * 元ネタ
+ * [もう「飲み会の話題がない」と困らない！盛り上がるネタと会話術25選](https://dekirukaiwajutu.com/category4/)
+ * このメソッドをテストするとカテゴリが追加されるので気をつけてください。
+ */
+
+describe('カテゴリ追加メソッド', () => {
+    const nomikai_wadais = ["失敗談",
+        "趣味",
+        "休日の過ごし方",
+        "食べ物",
+        "お酒",
+        "美容",
+        "出身地",
+        "恋愛",
+        "テレビ",
+        "スポーツ",
+        "昔話"];
+    jest.setTimeout(1000000);
+    test('カテゴリ追加', async () => {
+        for(let i = 0; i < nomikai_wadais.length ; i++) {
+            const c = {
+                cid: i,
+                name: nomikai_wadais[i],
+                description: `${nomikai_wadais[i]}について話しましょう！`,
+                rooms: []
+            };
+            // doc id指定してdocument
+            await _insertCategoryDocument(i,c);
+            const doc = await selectCategory(i);
+            doc.collection('rooms').add(await createTestRoomDocument());
+        }
+    });
+});

@@ -7,6 +7,11 @@ export const selectCategories = async () => {
     return db.collection('categories');
 };
 
+export const selectCategory = async (cid: number) => {
+    const db = firebase.firestore();
+    return db.collection('categories').doc(`${cid}`);
+};
+
 export const selectRoomDocument = async (cid: number) => {
     const db = firebase.firestore();
     return db.collection('categories').doc(`${cid}`).collection('room');
@@ -31,7 +36,8 @@ export const updateRoomDocumentWhenLeaved = async (cid: number,docId: string,Use
     });
 };
 
-export const _insertCategoryDocument = async (cid: number,categoryDocument: CategoryDocument) => {
+export const _insertCategoryDocument = async (docId: number,categoryDocument: CategoryDocument) => {
     const db = firebase.firestore();
-    return await db.collection('categories').add(categoryDocument);
+    return await db.collection('categories').doc(`${docId}`).set(categoryDocument);
 };
+
