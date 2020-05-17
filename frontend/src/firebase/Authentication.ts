@@ -15,18 +15,13 @@ export function getUid(): string {
   return getCurrentUser().uid;
 }
 
-async function isUser(uid: string): Promise<boolean> {
-  const user = await db
-    .collection("users")
-    .doc(uid)
-    .get();
+export async function isUser(uid: string): Promise<boolean> {
+  const user = await db.collection("users").doc(uid).get();
 
   return user.exists;
 }
 
-async function createUser(
-  uid: string,
-): Promise<void> {
+async function createUser(uid: string): Promise<void> {
   const docRef = db.collection("users").doc(uid);
 
   await docRef.set({
@@ -49,6 +44,6 @@ export const handleGoogleLogin = async () => {
   }
 };
 
-export const handleLogout = () => {
-  firebase.auth().signOut();
+export const handleLogout = async () => {
+  await firebase.auth().signOut();
 };

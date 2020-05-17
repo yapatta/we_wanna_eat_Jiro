@@ -15,7 +15,7 @@ const CategoryCard = (props) => {
   const classes = useStyles();
   return (
     <Grid item xs={12} md={6} lg={4}>
-      <Card className={classes.card}>
+      <Card>
         <CardContent>
           <Typography component="h2">
             <Link
