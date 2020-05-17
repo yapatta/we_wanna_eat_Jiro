@@ -1,9 +1,9 @@
 export interface RoomDocument {
-    name: string;
-    admin_uid: string;
-    admin: string;
-    description: string;
-    users: string[];
+  name: string;
+  admin_uid: string;
+  admin: string;
+  description: string;
+  users: UserDocument[];
 }
 
 export interface UserDocument {
