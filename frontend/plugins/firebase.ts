@@ -1,4 +1,3 @@
-
 import firebase from 'firebase';
 
 if (!firebase.apps.length) {
