@@ -4,22 +4,23 @@ import { API_PATH } from "./env";
 import Layout from "../components/layout";
 import CategoryCard from "../components/categoryCard";
 import { Grid } from "@material-ui/core";
+import {selectCategories} from "../database";
+import {CategoryDocument} from "../database/model";
 
 interface AppProps {
-  categories: Category[];
+  categories: CategoryDocument[];
 }
 
-interface Category {
-  cid: number;
-  name: string;
-}
 
 const Index = (props: AppProps) => {
   return (
     <Layout>
       <Grid container>
-        {props.categories.map((category: Category, index: number) => {
-          return <CategoryCard>{category}</CategoryCard>;
+        {props.categories.map((category: CategoryDocument, index: number) => {
+          return (
+              <CategoryCard>
+                {category}
+              </CategoryCard>)
         })}
       </Grid>
     </Layout>
@@ -27,9 +28,18 @@ const Index = (props: AppProps) => {
 };
 
 Index.getInitialProps = async ({ req }) => {
+  const categoryDocuments = await selectCategories();
+
   // ルームの全てのカテゴリを取得
   const res = await fetch(API_PATH + "/categories");
-  const categories: Category[] = await res.json();
+  const cats = await categoryDocuments.get();
+  const categories: CategoryDocument[] = [];
+  cats.forEach( doc => {
+    categories.push(doc.data() as CategoryDocument);
+  });
+
+
+
   return { categories };
 };
 
