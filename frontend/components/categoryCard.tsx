@@ -3,6 +3,7 @@ import Card from "@material-ui/core/Card";
 import { Grid } from "@material-ui/core";
 
 import Link from "next/link";
+import React from "react";
 
 const useStyles = makeStyles({
   card: {
@@ -24,7 +25,12 @@ const CategoryCard = (props) => {
               }}
               as={`/${props.children.name}`}
             >
-              <a>{props.children.name}</a>
+                <div>
+                    {// TODO: (@reud) 良い感じのカードレイアウトにする
+                    }
+                    <h3>{props.children.name}</h3>
+                    <p>{props.children.description}</p>
+                </div>
             </Link>
           </Typography>
         </CardContent>
