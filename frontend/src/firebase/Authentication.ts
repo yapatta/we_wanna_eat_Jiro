@@ -41,8 +41,6 @@ export const handleGoogleLogin = async () => {
     if (!_isUser) {
       await createUser(uid);
     }
-
-    return uid;
   }
 };
 
