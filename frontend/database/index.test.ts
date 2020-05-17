@@ -16,55 +16,64 @@ describe('selectCategories が動作すること。', () => {
         const docs = await c.get();
 
         docs.forEach(doc => {
-            console.log(doc.id,'=>',doc.data());
+            console.log(doc.id, '=>', doc.data());
         })
 
-        expect(docs.docs.length).toEqual(2);
     })
 
-})
+});
 
 describe('RoomDocumentの取得メソッドselectRoomDocument が動作すること。', () => {
-    test('データ数テスト', async () => {
+    test('取得テスト', async () => {
         const rs = await (await selectRoomDocument(2)).get();
         rs.forEach(el => {
-            console.log(el.id,'=>',el.data())
+            console.log(el.id, '=>', el.data())
         })
-        expect(rs.docs.length).toEqual(1);
     })
-})
+});
 
+/**
+ * 存在しているカテゴリ全てに適当なルームを作成します。
+ */
 describe('RoomDocumentの作成メソッド insertRoomDocument  が動作すること。', () => {
-    test('投稿テスト', async () => {
-        const roomDocument:RoomDocument = {
-            name : "test_RoomDocument",
-            admin: "test_admin",
-            admin_uid: "test_uid",
-            description: "test_description",
-            users: []
-        }
-        await insertRoomDocument(1,roomDocument);
-    })
-})
+    const MAX_CATEGORIES = 2;
+    for (let i = 0; i < MAX_CATEGORIES; ++i) {
+        test('投稿テスト', async () => {
+            const roomDocument: RoomDocument = {
+                name: "test_RoomDocument",
+                admin: "test_admin",
+                admin_uid: "test_uid",
+                description: "test_description",
+                users: []
+            };
+            const ret = await insertRoomDocument(i, roomDocument);
+            // ret.idでDocumentのidを取得できます。
+            console.log(ret.id)
+        });
+    }
+});
 
 describe('人間の侵入メソッド updateRoomDocumentWhenJoinedが動作すること。', () => {
     test('退出テスト', async () => {
-        await updateRoomDocumentWhenJoined(1,"aWF0r7FaOvMEh4RN3SVL",{
+        await updateRoomDocumentWhenJoined(1, "aWF0r7FaOvMEh4RN3SVL", {
             uid: "test uid",
             nickname: "test nickname",
             introduction: "Howdy!",
             evaluation: 3
         })
     })
-})
+});
 
 describe('人間の退出メソッド updateRoomDocumentWhenLeavedが動作すること。', () => {
     test('退出テスト', async () => {
-        await updateRoomDocumentWhenLeaved(1,"aWF0r7FaOvMEh4RN3SVL",{
+        // doc Id決め打ちなのでテストしたい場合は諸々返る必要があります。
+        await updateRoomDocumentWhenLeaved(1, "aWF0r7FaOvMEh4RN3SVL", {
             uid: "test uid",
             nickname: "test nickname",
             introduction: "Howdy!",
             evaluation: 3
         })
     })
-})
+});
+
+
