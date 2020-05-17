@@ -1,5 +1,5 @@
 import firebase from './../plugins/firebase'
-import {RoomDocument, UserDocument} from "./model";
+import {CategoryDocument, RoomDocument, UserDocument} from "./model";
 
 
 export const selectCategories = async () => {
@@ -29,4 +29,9 @@ export const updateRoomDocumentWhenLeaved = async (cid: number,docId: string,Use
     await db.collection('categories').doc(`${cid}`).collection('room').doc(docId).update({
         users: firebase.firestore.FieldValue.arrayRemove(UserDocument)
     });
+};
+
+export const _insertCategoryDocument = async (cid: number,categoryDocument: CategoryDocument) => {
+    const db = firebase.firestore();
+    return await db.collection('categories').add(categoryDocument);
 };

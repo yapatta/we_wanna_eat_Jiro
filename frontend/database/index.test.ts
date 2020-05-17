@@ -75,3 +75,5 @@ describe('人間の退出メソッド updateRoomDocumentWhenLeavedが動作す�
         })
     })
 });
+
+
