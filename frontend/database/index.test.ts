@@ -21,7 +21,7 @@ describe('selectCategories が動作すること。', () => {
 
     })
 
-})
+});
 
 describe('RoomDocumentの取得メソッドselectRoomDocument が動作すること。', () => {
     test('取得テスト', async () => {
@@ -30,7 +30,7 @@ describe('RoomDocumentの取得メソッドselectRoomDocument が動作するこ
             console.log(el.id, '=>', el.data())
         })
     })
-})
+});
 
 /**
  * 存在しているカテゴリ全てに適当なルームを作成します。
@@ -62,10 +62,11 @@ describe('人間の侵入メソッド updateRoomDocumentWhenJoinedが動作す�
             evaluation: 3
         })
     })
-})
+});
 
 describe('人間の退出メソッド updateRoomDocumentWhenLeavedが動作すること。', () => {
     test('退出テスト', async () => {
+        // doc Id決め打ちなのでテストしたい場合は諸々返る必要があります。
         await updateRoomDocumentWhenLeaved(1, "aWF0r7FaOvMEh4RN3SVL", {
             uid: "test uid",
             nickname: "test nickname",
@@ -73,4 +74,4 @@ describe('人間の退出メソッド updateRoomDocumentWhenLeavedが動作す�
             evaluation: 3
         })
     })
-})
+});

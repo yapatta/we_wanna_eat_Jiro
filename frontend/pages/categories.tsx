@@ -31,9 +31,12 @@ const Categories = (props: CategoryProps) => {
 Categories.getInitialProps = async ({ query }) => {
   // indexを元にapi叩く
   // ex: /categories/1/rooms (カテゴリID = 1の部屋全て)
-  const res = await selectRoomDocument(query.name);
+  const res = await selectRoomDocument(query.index);
   const rooms: RoomDocument[] = [];
-  (await res.get()).forEach(doc => rooms.push(doc.data() as RoomDocument));
+  const docs = await res.get();
+  console.log(query.index);
+  console.log(docs);
+  docs.forEach(doc => rooms.push(doc.data() as RoomDocument));
   return { rooms };
 };
 export default Categories;
