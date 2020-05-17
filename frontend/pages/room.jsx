@@ -19,9 +19,8 @@ const Room = (props) => {
   const jsLocalStream = document.getElementById("js-local-stream");
   const jsRemoteStream = document.getElementById("js-remote-streams");
   const jsLeaveTrigger = document.getElementById("js-leave-trigger");
-  const getRoomModeByHash = () => (location.hash === "#sfu" ? "sfu" : "mesh");
 
-  const localStreamRef = useRef<HTMLVideoElement>(null);
+  const localStreamRef = useRef(null);
 
   const localStreamSetting = async () => {
     localStreamRef.current.srcObject = await navigator.mediaDevices.getUserMedia(
@@ -44,17 +43,10 @@ const Room = (props) => {
     }
   };
 
-  const [roomMode, setRoomMode] = useState(getRoomModeByHash());
   const [roomId, setRoomId] = useState("");
   const [roomMessages, setRoomMessages] = useState("");
-  const [localText, setLocalText] = useState("");
   const [peer, setPeer] = useState(new Peer({ key: SKYWAY_API_KEY }));
-
-  window.addEventListener("hashchange", () => setRoomMode(getRoomModeByHash()));
-
-  window.addEventListener("popstate", (e) => {
-    localStreamOff();
-  });
+  const [isJoined, setIsJoined] = useState(false);
 
   const joinTroggerClick = async () => {
     if (!peer.open) {
@@ -62,24 +54,23 @@ const Room = (props) => {
       return;
     }
 
-    const room =
-      localStreamRef.current.srcObject instanceof MediaStream
-        ? peer.joinRoom(roomId, {
-            mode: getRoomModeByHash(),
-            stream: localStreamRef.current.srcObject,
-          })
-        : null;
+    const room = peer.joinRoom(roomId, {
+      mode: "mesh",
+      stream: localStreamRef.current.srcObject,
+    });
 
     room.once("open", () => {
       setRoomMessages(roomMessages + "=== You joined ===\n");
+      setIsJoined(true);
     });
-    room.on("peerJoin", (peerId: string) => {
+    room.on("peerJoin", (peerId) => {
       setRoomMessages(roomMessages + `=== ${peerId} joined ===\n`);
     });
 
     room.on("stream", async (stream) => {
       const newVideo = document.createElement("video");
       newVideo.srcObject = stream;
+      newVideo.playsInline = true;
       newVideo.setAttribute("data-peer-id", stream.peerId);
       newVideo.setAttribute("width", "25%");
       jsRemoteStream.append(newVideo);
@@ -92,42 +83,38 @@ const Room = (props) => {
     });
 
     // for closing room members
-    room.on("peerLeave", (peerId: string) => {
-      const remoteVideo: HTMLVideoElement = jsRemoteStream.querySelector(
+    room.on("peerLeave", (peerId) => {
+      const remoteVideo = jsRemoteStream.querySelector(
         `[data-peer-id=${peerId}]`
       );
 
-      if (remoteVideo.id !== "js-local-stream") {
-        if (remoteVideo.srcObject instanceof MediaStream) {
-          remoteVideo.srcObject.getTracks().forEach((track) => track.stop());
-        }
-        remoteVideo.srcObject = null;
-        remoteVideo.remove();
-        setRoomMessages(roomMessages + `=== ${peerId} left ===\n`);
-      }
+      remoteVideo.srcObject.getTracks().forEach((track) => track.stop());
+      remoteVideo.srcObject = null;
+      remoteVideo.remove();
+
+      setRoomMessages(roomMessages + `=== ${peerId} left ===\n`);
     });
 
     // for closing myself
     room.once("close", () => {
       setRoomMessages(roomMessages + "== You left ===\n");
-      Array.from(jsRemoteStream.children).forEach(
-        (remoteVideo: HTMLVideoElement) => {
-          if (remoteVideo.id !== "js-local-stream") {
-            if (remoteVideo.srcObject instanceof MediaStream) {
-              remoteVideo.srcObject
-                .getTracks()
-                .forEach((track) => track.stop());
-            }
-            remoteVideo.srcObject = null;
-            remoteVideo.remove();
-          }
-        }
-      );
+      Array.from(jsRemoteStream.children).forEach((remoteVideo) => {
+        remoteVideo.srcObject.getTracks().forEach((track) => track.stop());
+        remoteVideo.srcObject = null;
+        remoteVideo.remove();
+      });
     });
 
-    jsLeaveTrigger.addEventListener("click", () => room.close(), {
-      once: true,
-    });
+    jsLeaveTrigger.addEventListener(
+      "click",
+      () => {
+        setIsJoined(false);
+        room.close();
+      },
+      {
+        once: true,
+      }
+    );
   };
 
   useEffect(() => {
@@ -135,13 +122,13 @@ const Room = (props) => {
       await localStreamSetting();
     })();
   }, []);
+
   return (
     <Layout>
       <div className="container">
         <h1 className="heading">Room example</h1>
         <div className="room">
-          <div className={classes.myVideo}></div>
-          <div className={classes.remoteStreams} id="js-remote-streams">
+          <div className={classes.myVideo}>
             <video
               id="js-local-stream"
               muted
@@ -149,30 +136,38 @@ const Room = (props) => {
               playsInline
               width="25%"
             ></video>
+            <input
+              type="text"
+              placeholder="Room Name"
+              id="js-room-id"
+              onChange={(e) => setRoomId(e.target.value)}
+            />
+            <Button
+              id="js-leave-trigger"
+              style={{ display: !isJoined ? "none" : "" }}
+            >
+              Leave
+            </Button>
+            <Button
+              variant="contained"
+              id="js-join-trigger"
+              color="primary"
+              onClick={joinTroggerClick}
+              style={{ display: isJoined ? "none" : "" }}
+            >
+              Join
+            </Button>
           </div>
-          <span id="js-room-mode">{roomMode}</span>:
-          <input
-            type="text"
-            placeholder="Room Name"
-            id="js-room-id"
-            onChange={(e) => setRoomId(e.target.value)}
-          />
-          <Button
-            variant="contained"
-            id="js-join-trigger"
-            color="primary"
-            onClick={joinTroggerClick}
-          >
-            Join
-          </Button>
-          <Button id="js-leave-trigger">Leave</Button>
+
+          <div className={classes.remoteStreams} id="js-remote-streams"></div>
           <div>
             <pre className="messages" id="js-messages">
               {roomMessages}
             </pre>
           </div>
           <button
-            onClick={() => {
+            onClick={async () => {
+              await localStreamOff();
               history.back();
             }}
           >
