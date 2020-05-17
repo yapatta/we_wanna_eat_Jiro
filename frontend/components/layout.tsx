@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -9,8 +9,8 @@ import MenuIcon from "@material-ui/icons/Menu";
 import {
   handleGoogleLogin,
   handleLogout,
-  isUser,
 } from "../src/firebase/Authentication";
+import firebase from "../plugins/firebase";
 import Link from "next/link";
 
 const useStyles = makeStyles((theme) => ({
@@ -27,18 +27,15 @@ const useStyles = makeStyles((theme) => ({
 
 const Layout = ({ children }) => {
   const classes = useStyles();
+  const [currentUser, setCurrentUser] = useState<firebase.User>();
 
-  const [uid, setUid] = useState("");
-
-  const login = async () => {
-    const res = await handleGoogleLogin();
-    setUid(res);
-  };
-
-  const logout = async () => {
-    await handleLogout();
-    setUid("");
-  };
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      setCurrentUser(user);
+    } else {
+      setCurrentUser(null);
+    }
+  });
 
   return (
     <div className={classes.root}>
@@ -55,11 +52,7 @@ const Layout = ({ children }) => {
           <Typography variant="h6" className={classes.title}>
             オンライン飲み会！！
           </Typography>
-          {uid === "" || !isUser(uid) ? (
-            <Button color="inherit" onClick={login}>
-              Login
-            </Button>
-          ) : (
+          {currentUser ? (
             <span>
               <Button color="inherit">
                 <Link
@@ -71,10 +64,14 @@ const Layout = ({ children }) => {
                   <span style={{ color: "white" }}> 部屋を作る</span>
                 </Link>
               </Button>
-              <Button color="inherit" onClick={logout}>
+              <Button color="inherit" onClick={handleLogout}>
                 Logout
               </Button>
             </span>
+          ) : (
+            <Button color="inherit" onClick={handleGoogleLogin}>
+              Login
+            </Button>
           )}
         </Toolbar>
       </AppBar>
