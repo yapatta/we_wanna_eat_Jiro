@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -7,6 +7,7 @@ import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import {handleGoogleLogin, handleLogout} from "../src/firebase/Authentication";
+import firebase from "../plugins/firebase";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,6 +23,15 @@ const useStyles = makeStyles((theme) => ({
 
 const Layout = ({ children }) => {
   const classes = useStyles();
+  const [currentUser, setCurrentUser] = useState<firebase.User>();
+
+  firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+      setCurrentUser(user);
+    } else {
+      setCurrentUser(null);
+    }
+  });
 
   return (
     <div className={classes.root}>
@@ -38,7 +48,14 @@ const Layout = ({ children }) => {
           <Typography variant="h6" className={classes.title}>
             オンライン飲み会！！
           </Typography>
-          <Button color="inherit" onClick={handleGoogleLogin}>Login</Button>
+          {
+            currentUser ? (
+              <Button color="inherit" onClick={handleLogout}>Logout</Button>
+            ) : (
+              <Button color="inherit" onClick={handleGoogleLogin}>Login</Button>
+            )
+          }
+
         </Toolbar>
       </AppBar>
       <div>{children}</div>
