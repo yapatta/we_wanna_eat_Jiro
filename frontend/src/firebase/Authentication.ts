@@ -1,6 +1,5 @@
 import firebase from "../../plugins/firebase";
 
-const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
 const db = firebase.firestore();
 
 export function getCurrentUser(): firebase.User {
@@ -27,30 +26,25 @@ async function isUser(uid: string): Promise<boolean> {
 
 async function createUser(
   uid: string,
-  accessToken: string,
-  secretKey: string
 ): Promise<void> {
   const docRef = db.collection("users").doc(uid);
 
   await docRef.set({
     Id: docRef.id,
-    AccessToken: accessToken,
-    SecretKey: secretKey
   });
 }
 
-export const handleLogin = async () => {
+export const handleGoogleLogin = async () => {
+  const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
   const result = await firebase.auth().signInWithPopup(googleAuthProvider);
   const uid = result.user?.uid;
-  const accessToken = (result.credential as any).accessToken;
-  const secret = (result.credential as any).secret;
 
   let _isUser: boolean = false;
   if (uid != null) {
     _isUser = await isUser(uid);
 
     if (!_isUser) {
-      await createUser(uid, accessToken, secret);
+      await createUser(uid);
     }
   }
 };
