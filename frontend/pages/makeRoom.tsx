@@ -9,10 +9,8 @@ import {
   Typography,
   Container,
   makeStyles,
-  Card,
-  CardContent,
 } from "@material-ui/core";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 
 import {
@@ -65,12 +63,6 @@ const makeRoom = (props) => {
   const handleRoomCategoryChange = (event) => {
     setRoomCategory(event.target.value);
   };
-
-  useEffect(() => {
-    (async () => {
-      // console.log(props.categories);
-    })();
-  }, []);
 
   const validateNewRoom = (newRoom: RoomDocument) => {
     if (newRoom.name === undefined || newRoom.name === "") {
@@ -210,7 +202,6 @@ makeRoom.getInitialProps = async ({ props }) => {
   const docs = await c.get();
 
   let categories = [];
-  let tmp: any;
   docs.forEach((doc) => {
     categories.push(doc.data());
   });

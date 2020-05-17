@@ -7,14 +7,14 @@ export interface RoomDocument {
 }
 
 export interface UserDocument {
-  uid: string;
-  nickname: string;
-  introduction: string;
-  evaluation: number;
+    uid: string;
+    nickname: string;
+    introduction: string;
+    evaluation: number;
 }
 
 export interface CategoryDocument {
-  cid: number;
-  name: string;
-  description: string;
+    cid: number;
+    name: string;
+    description: string;
 }
