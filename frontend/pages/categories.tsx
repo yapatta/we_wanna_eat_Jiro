@@ -4,23 +4,20 @@ import { API_PATH } from "./env";
 import Layout from "../components/layout";
 import RoomCard from "../components/roomCard";
 import { Grid } from "@material-ui/core";
+import {RoomDocument} from "../database/model";
+import {selectRoomDocument} from "../database";
+import React from "react";
 
-interface Room {
-  rid: number;
-  name: string;
-  admin: string;
-  description: string;
-}
 
 interface CategoryProps {
-  rooms: Room[];
+  rooms: RoomDocument[];
 }
 
 const Categories = (props: CategoryProps) => {
   return (
     <Layout>
       <Grid container>
-        {props.rooms.map((room: Room, index: number) => {
+        {props.rooms.map((room: RoomDocument, index: number) => {
           return <RoomCard>{room}</RoomCard>;
         })}
       </Grid>
@@ -34,8 +31,9 @@ const Categories = (props: CategoryProps) => {
 Categories.getInitialProps = async ({ query }) => {
   // indexを元にapi叩く
   // ex: /categories/1/rooms (カテゴリID = 1の部屋全て)
-  const res = await fetch(API_PATH + "/categories/" + query.name + "/rooms");
-  const rooms: Room[] = await res.json();
+  const res = await selectRoomDocument(query.name);
+  const rooms: RoomDocument[] = [];
+  (await res.get()).forEach(doc => rooms.push(doc.data() as RoomDocument));
   return { rooms };
 };
 export default Categories;
