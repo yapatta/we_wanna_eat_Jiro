@@ -18,7 +18,6 @@ const Room = (props) => {
 
   const jsLocalStream = document.getElementById("js-local-stream");
   const jsRemoteStream = document.getElementById("js-remote-streams");
-  const jsSendTrigger = document.getElementById("js-send-trigger");
   const jsLeaveTrigger = document.getElementById("js-leave-trigger");
   const getRoomModeByHash = () => (location.hash === "#sfu" ? "sfu" : "mesh");
 
@@ -110,7 +109,6 @@ const Room = (props) => {
 
     // for closing myself
     room.once("close", () => {
-      jsSendTrigger.removeEventListener("click", onClickSend);
       setRoomMessages(roomMessages + "== You left ===\n");
       Array.from(jsRemoteStream.children).forEach(
         (remoteVideo: HTMLVideoElement) => {
@@ -127,18 +125,9 @@ const Room = (props) => {
       );
     });
 
-    jsSendTrigger.addEventListener("click", onClickSend);
     jsLeaveTrigger.addEventListener("click", () => room.close(), {
       once: true,
     });
-
-    function onClickSend() {
-      // Send message to all of the peers in the room via websocket
-      room.send(localText);
-
-      setRoomMessages(roomMessages + `${peer.id}: ${localText}\n`);
-      setLocalText("");
-    }
   };
 
   useEffect(() => {
@@ -150,10 +139,6 @@ const Room = (props) => {
     <Layout>
       <div className="container">
         <h1 className="heading">Room example</h1>
-        <p className="note">
-          Change Room mode (before join in a room):
-          <a href="#">mesh</a> / <a href="#sfu">sfu</a>
-        </p>
         <div className="room">
           <div className={classes.myVideo}></div>
           <div className={classes.remoteStreams} id="js-remote-streams">
@@ -185,15 +170,6 @@ const Room = (props) => {
             <pre className="messages" id="js-messages">
               {roomMessages}
             </pre>
-            <input
-              type="text"
-              id="js-local-text"
-              value={localText}
-              onChange={(e) => {
-                setLocalText(e.target.value);
-              }}
-            />
-            <button id="js-send-trigger">Send</button>
           </div>
           <button
             onClick={() => {
