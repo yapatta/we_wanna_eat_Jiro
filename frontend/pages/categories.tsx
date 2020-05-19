@@ -4,10 +4,9 @@ import { API_PATH } from "./env";
 import Layout from "../components/layout";
 import RoomCard from "../components/roomCard";
 import { Grid } from "@material-ui/core";
-import {RoomDocument} from "../database/model";
-import {selectRoomDocument} from "../database";
+import { RoomDocument } from "../database/model";
+import { selectRoomDocument } from "../database";
 import React from "react";
-
 
 interface CategoryProps {
   rooms: RoomDocument[];
@@ -29,14 +28,12 @@ const Categories = (props: CategoryProps) => {
 };
 
 Categories.getInitialProps = async ({ query }) => {
-  // indexを元にapi叩く
-  // ex: /categories/1/rooms (カテゴリID = 1の部屋全て)
   const res = await selectRoomDocument(query.index);
   const rooms: RoomDocument[] = [];
   const docs = await res.get();
   console.log(query.index);
   console.log(docs);
-  docs.forEach(doc => rooms.push(doc.data() as RoomDocument));
+  docs.forEach((doc) => rooms.push(doc.data() as RoomDocument));
   return { rooms };
 };
 export default Categories;
