@@ -1,4 +1,3 @@
-import Layout from "../components/layout";
 import Button from "@material-ui/core/Button";
 import {
   TextField,
@@ -104,96 +103,94 @@ const makeRoom = (props) => {
   };
 
   return (
-    <Layout>
-      <Container component="main" maxWidth="xs">
-        {newRoomFlag ? (
-          <div className={classes.paper}>
-            <Typography component="h1" variant="h5">
-              ルームが作成されました！
-            </Typography>
-            <Typography component="h2" className={classes.result}>
-              {roomName}
-            </Typography>
-            <Typography component="h3" className={classes.result}>
-              管理者: 田中
-            </Typography>
-            <Typography component="h4" className={classes.result}>
-              説明: {roomDescription}
-            </Typography>
-            <Typography>
-              <Link
-                href={{
-                  pathname: "/room",
-                  query: { index: `${roomUUID}` },
-                }}
-                as={"/room"}
-              >
-                <a>部屋に入る</a>
-              </Link>
-            </Typography>
-          </div>
-        ) : (
-          <div className={classes.paper}>
-            <Typography component="h1" variant="h5">
-              ルームを作成
-            </Typography>
-            <div className={classes.form}>
-              <TextField
-                id="roomName"
-                label="ルーム名"
-                value={roomName}
-                fullWidth
-                onChange={handleNameChange}
-                variant="outlined"
-                className={classes.input}
-              />
-              <TextField
-                id="roomDescription"
-                label="ルーム詳細"
-                multiline
-                rows={3}
-                value={roomDescription}
-                fullWidth
-                onChange={handleDescriptionChange}
-                variant="outlined"
-                className={classes.input}
-              />
-              <Grid container>
-                <Grid item container className={classes.input}>
-                  <InputLabel id="demo-simple-select-label">
-                    カテゴリ選択
-                  </InputLabel>
-                </Grid>
-                <Grid>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={roomCategory}
-                    required
-                    onClick={handleRoomCategoryChange}
-                    style={{ width: 200 }}
-                  >
-                    {props.categories.map((category, index) => (
-                      <MenuItem value={`${index}`}>{category.name}</MenuItem>
-                    ))}
-                  </Select>
-                </Grid>
+    <Container component="main" maxWidth="xs">
+      {newRoomFlag ? (
+        <div className={classes.paper}>
+          <Typography component="h1" variant="h5">
+            ルームが作成されました！
+          </Typography>
+          <Typography component="h2" className={classes.result}>
+            {roomName}
+          </Typography>
+          <Typography component="h3" className={classes.result}>
+            管理者: 田中
+          </Typography>
+          <Typography component="h4" className={classes.result}>
+            説明: {roomDescription}
+          </Typography>
+          <Typography>
+            <Link
+              href={{
+                pathname: "/room",
+                query: { index: `${roomUUID}` },
+              }}
+              as={"/room"}
+            >
+              <a>部屋に入る</a>
+            </Link>
+          </Typography>
+        </div>
+      ) : (
+        <div className={classes.paper}>
+          <Typography component="h1" variant="h5">
+            ルームを作成
+          </Typography>
+          <div className={classes.form}>
+            <TextField
+              id="roomName"
+              label="ルーム名"
+              value={roomName}
+              fullWidth
+              onChange={handleNameChange}
+              variant="outlined"
+              className={classes.input}
+            />
+            <TextField
+              id="roomDescription"
+              label="ルーム詳細"
+              multiline
+              rows={3}
+              value={roomDescription}
+              fullWidth
+              onChange={handleDescriptionChange}
+              variant="outlined"
+              className={classes.input}
+            />
+            <Grid container>
+              <Grid item container className={classes.input}>
+                <InputLabel id="demo-simple-select-label">
+                  カテゴリ選択
+                </InputLabel>
               </Grid>
-              <Button
-                variant="contained"
-                color="primary"
-                type="submit"
-                fullWidth
-                onClick={createRoom}
-                className={classes.submit}
-              >
-                作成
-              </Button>
-            </div>
+              <Grid>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={roomCategory}
+                  required
+                  onClick={handleRoomCategoryChange}
+                  style={{ width: 200 }}
+                >
+                  {props.categories.map((category, index) => (
+                    <MenuItem value={`${index}`}>{category.name}</MenuItem>
+                  ))}
+                </Select>
+              </Grid>
+            </Grid>
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              fullWidth
+              onClick={createRoom}
+              className={classes.submit}
+            >
+              作成
+            </Button>
           </div>
-        )}
-      </Container>
-    </Layout>
+        </div>
+      )}
+    </Container>
   );
 };
 

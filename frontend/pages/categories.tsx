@@ -1,7 +1,6 @@
 import fetch from "isomorphic-unfetch";
 import Link from "next/link";
 import { API_PATH } from "./env";
-import Layout from "../components/layout";
 import RoomCard from "../components/roomCard";
 import { Grid } from "@material-ui/core";
 import {RoomDocument} from "../database/model";
@@ -15,7 +14,7 @@ interface CategoryProps {
 
 const Categories = (props: CategoryProps) => {
   return (
-    <Layout>
+    <div>
       <Grid container>
         {props.rooms.map((room: RoomDocument, index: number) => {
           return <RoomCard>{room}</RoomCard>;
@@ -24,7 +23,7 @@ const Categories = (props: CategoryProps) => {
       <Link href="/">
         <a>ホームに戻る</a>
       </Link>
-    </Layout>
+    </div>
   );
 };
 

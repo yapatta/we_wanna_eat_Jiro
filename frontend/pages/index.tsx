@@ -1,7 +1,6 @@
 import React from "react";
 import fetch from "isomorphic-unfetch";
 import { API_PATH } from "./env";
-import Layout from "../components/layout";
 import CategoryCard from "../components/categoryCard";
 import { Grid } from "@material-ui/core";
 import {selectCategories} from "../database";
@@ -14,16 +13,14 @@ interface AppProps {
 
 const Index = (props: AppProps) => {
   return (
-    <Layout>
-      <Grid container>
-        {props.categories.map((category: CategoryDocument, index: number) => {
-          return (
-              <CategoryCard>
-                {category}
-              </CategoryCard>)
-        })}
-      </Grid>
-    </Layout>
+    <Grid container>
+      {props.categories.map((category: CategoryDocument, index: number) => {
+        return (
+            <CategoryCard>
+              {category}
+            </CategoryCard>)
+      })}
+    </Grid>
   );
 };
 
