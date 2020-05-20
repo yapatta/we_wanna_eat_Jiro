@@ -9,7 +9,7 @@ import {
   Container,
   makeStyles,
 } from "@material-ui/core";
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 
 import {
@@ -18,6 +18,9 @@ import {
   CategoryDocument,
 } from "../database/model";
 import { insertRoomDocument, selectCategories } from "../database/index";
+import {getCurrentUser} from "../src/firebase/Authentication";
+import firebase from "../plugins/firebase";
+
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -187,6 +190,7 @@ const makeRoom = (props) => {
             >
               作成
             </Button>
+            <p>{props.currentUser?.email ?? '非ログイン'}</p>
           </div>
         </div>
       )}
@@ -203,7 +207,9 @@ makeRoom.getInitialProps = async ({ props }) => {
     categories.push(doc.data());
   });
 
-  return { ...props, categories };
+  const currentUser = getCurrentUser;
+
+  return { ...props, categories, currentUser};
 };
 
 export default makeRoom;
