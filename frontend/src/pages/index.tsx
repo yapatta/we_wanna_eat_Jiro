@@ -6,6 +6,7 @@ import CategoryCard from '../components/categoryCard';
 import { Grid } from '@material-ui/core';
 import { selectCategories } from '../database';
 import { CategoryDocument } from '../database/model';
+import { Container } from '@material-ui/core';
 
 interface AppProps {
   categories: CategoryDocument[];
@@ -14,11 +15,13 @@ interface AppProps {
 const Index = (props: AppProps) => {
   return (
     <Layout>
-      <Grid container>
-        {props.categories.map((category: CategoryDocument, index: number) => {
-          return <CategoryCard key={index}>{category}</CategoryCard>;
-        })}
-      </Grid>
+      <Container maxWidth="lg">
+        <Grid container>
+          {props.categories.map((category: CategoryDocument, index: number) => {
+            return <CategoryCard key={index}>{category}</CategoryCard>;
+          })}
+        </Grid>
+      </Container>
     </Layout>
   );
 };
