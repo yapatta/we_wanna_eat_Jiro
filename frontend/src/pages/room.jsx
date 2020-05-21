@@ -141,6 +141,7 @@ const Room = (props) => {
                   ref={localStreamRef}
                   playsinline
                   width="100%"
+                  height="100%"
                 />
               </Grid>
             </Grid>
