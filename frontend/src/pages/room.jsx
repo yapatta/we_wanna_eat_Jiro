@@ -15,6 +15,7 @@ const useStyles = makeStyles({
 const Room = (props) => {
   const classes = useStyles();
 
+  const roomElement = document.getElementById('js-rooms');
   const jsLocalStream = document.getElementById('js-local-stream');
   const jsRemoteStream = document.getElementById('js-remote-streams');
   const jsLeaveTrigger = document.getElementById('js-leave-trigger');
@@ -76,7 +77,7 @@ const Room = (props) => {
       newVideo.playsInline = true;
       newVideo.setAttribute('width', '100%');
       newVideo.setAttribute('data-peer-id', stream.peerId);
-      jsRemoteStream.append(grid);
+      roomElement.append(grid);
       await newVideo.play().catch(console.error);
     });
 
@@ -132,7 +133,7 @@ const Room = (props) => {
         <h1 className="heading">Room example</h1>
         <div className="room" >
           <div className={classes.myVideo}>
-            <Grid className={classes.remoteStreams} container id="js-rooms" spacing={2}>
+            <Grid container id="js-rooms" spacing={2}>
               <Grid item xs={12} md={6} lg={6}>
                 <video
                   id="js-local-stream"
@@ -166,6 +167,7 @@ const Room = (props) => {
             </Button>
           </div>
 
+          <div className={classes.remoteStreams} id="js-remote-streams" />
           <div>
             <pre className="messages" id="js-messages">
               {roomMessages}
