@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Peer, { RoomStream } from 'skyway-js';
-import { API_PATH, SKYWAY_API_KEY } from './env';
+import Peer from 'skyway-js';
+import { SKYWAY_API_KEY } from './env';
 import Layout from '../components/layout';
-import { Grid, makeStyles, Button } from '@material-ui/core';
+import { makeStyles, Button } from '@material-ui/core';
 
 const useStyles = makeStyles({
   myVideo: {},
@@ -44,7 +44,7 @@ const Room = (props) => {
 
   const [roomId, setRoomId] = useState('');
   const [roomMessages, setRoomMessages] = useState('');
-  const [peer, setPeer] = useState(new Peer({ key: SKYWAY_API_KEY }));
+  const peer = new Peer({ key: SKYWAY_API_KEY });
   const [isJoined, setIsJoined] = useState(false);
 
   const joinTroggerClick = async () => {
