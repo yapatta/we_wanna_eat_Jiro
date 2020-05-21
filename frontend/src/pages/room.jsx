@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Peer from 'skyway-js';
 import { SKYWAY_API_KEY } from './env';
 import Layout from '../components/layout';
-import { makeStyles, Button } from '@material-ui/core';
+import {makeStyles, Button, Grid} from '@material-ui/core';
 
 const useStyles = makeStyles({
   myVideo: {},
@@ -67,12 +67,16 @@ const Room = (props) => {
     });
 
     room.on('stream', async (stream) => {
+      const grid = document.createElement('div');
+      grid.setAttribute('class', 'MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 MuiGrid-grid-lg-6');
       const newVideo = document.createElement('video');
+      newVideo.setAttribute('id', "js-local-stream");
+      grid.append(newVideo);
       newVideo.srcObject = stream;
       newVideo.playsInline = true;
+      newVideo.setAttribute('width', '100%');
       newVideo.setAttribute('data-peer-id', stream.peerId);
-      newVideo.setAttribute('width', '25%');
-      jsRemoteStream.append(newVideo);
+      jsRemoteStream.append(grid);
       await newVideo.play().catch(console.error);
     });
 
@@ -126,15 +130,19 @@ const Room = (props) => {
     <Layout>
       <div className="container">
         <h1 className="heading">Room example</h1>
-        <div className="room">
+        <div className="room" >
           <div className={classes.myVideo}>
-            <video
-              id="js-local-stream"
-              muted
-              ref={localStreamRef}
-              playsInline
-              width="25%"
-            />
+            <Grid className={classes.remoteStreams} container id="js-rooms" spacing={2}>
+              <Grid item xs={12} md={6} lg={6}>
+                <video
+                  id="js-local-stream"
+                  muted
+                  ref={localStreamRef}
+                  playsinline
+                  width="100%"
+                />
+              </Grid>
+            </Grid>
             <input
               type="text"
               placeholder="Room Name"
@@ -143,7 +151,7 @@ const Room = (props) => {
             />
             <Button
               id="js-leave-trigger"
-              style={{ display: !isJoined ? 'none' : '' }}
+              style={{display: !isJoined ? 'none' : ''}}
             >
               Leave
             </Button>
@@ -152,13 +160,12 @@ const Room = (props) => {
               id="js-join-trigger"
               color="primary"
               onClick={joinTroggerClick}
-              style={{ display: isJoined ? 'none' : '' }}
+              style={{display: isJoined ? 'none' : ''}}
             >
               Join
             </Button>
           </div>
 
-          <div className={classes.remoteStreams} id="js-remote-streams" />
           <div>
             <pre className="messages" id="js-messages">
               {roomMessages}
