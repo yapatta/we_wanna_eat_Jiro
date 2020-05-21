@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SKYWAY_API_KEY } from '../env';
 import Layout from '../components/layout';
-import { makeStyles, Button } from '@material-ui/core';
+import { makeStyles, Button, Grid } from '@material-ui/core';
 
 
 const useStyles = makeStyles({
@@ -76,12 +76,17 @@ const Room = (props) => {
     });
 
     room.on('stream', async (stream) => {
+      const grid = document.createElement('div');
+      grid.setAttribute('class', 'MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 MuiGrid-grid-lg-6');
       const newVideo = document.createElement('video');
+      newVideo.setAttribute('id', "js-local-stream");
+      grid.append(newVideo);
       newVideo.srcObject = stream;
       newVideo.playsInline = true;
+      newVideo.setAttribute('width', '100%');
       newVideo.setAttribute('data-peer-id', stream.peerId);
-      newVideo.setAttribute('width', '25%');
-      jsRemoteStream.append(newVideo);
+      newVideo.setAttribute('width', '100%');
+      jsRemoteStream.append(grid);
       await newVideo.play().catch(console.error);
     });
 
@@ -136,15 +141,19 @@ const Room = (props) => {
       <div className="container">
         <h1 className="heading">Room example</h1>
         <div className="room">
-          <div className={classes.myVideo}>
-            <video
-              id="js-local-stream"
-              muted
-              ref={localStreamRef}
-              playsInline
-              width="25%"
-            />
-            <input
+          <Grid className={classes.remoteStreams} id="js-remote-streams" spacing={2}>
+            <Grid item xs={12} md={6} lg={6}>
+              <video
+                id="js-local-stream"
+                muted
+                ref={localStreamRef}
+                playsinline
+                width="100%"
+                height="100%"
+              />
+            </Grid>
+          </Grid>
+              <input
               type="text"
               placeholder="Room Name"
               id="js-room-id"
@@ -167,7 +176,6 @@ const Room = (props) => {
             </Button>
           </div>
 
-          <div className={classes.remoteStreams} id="js-remote-streams" />
           <div>
             <pre className="messages" id="js-messages">
               {roomMessages}
@@ -182,7 +190,6 @@ const Room = (props) => {
             前のページに戻る
           </button>
         </div>
-      </div>
     </Layout>
   );
 };
