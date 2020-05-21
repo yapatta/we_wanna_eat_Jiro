@@ -1,15 +1,28 @@
-import { useState, useEffect, useRef } from "react";
-import Peer from "skyway-js";
+import React from 'react';
+import { useState, useEffect, useRef } from 'react';
+import Peer from 'skyway-js';
+import { SKYWAY_API_KEY } from './env';
 
-import { API_PATH, SKYWAY_API_KEY } from "./env";
+const Chat = () => {
+  const localStreamRef = useRef<HTMLVideoElement>(null);
+  const remoteStreamRef = useRef<HTMLVideoElement>(null);
 
-const Chat = (props) => {
+  const [localId, setLocalId] = useState('');
+  const [localVideoMuted, setLocalVideoMuted] = useState(true);
+  const [localVideoPlaysInline, setLocalVideoPlaysInline] = useState(true);
+
+  const [remoteId, setRemoteId] = useState('');
+  const [remoteVideoMuted, setRemoteVideoMuted] = useState(true);
+  const [remoteVideoPlaysInline, setRemoteVideoPlaysInline] = useState(false);
+
+  const [peer, setPeer] = useState(new Peer({ key: SKYWAY_API_KEY }));
+
   const localStreamSetting = async () => {
     localStreamRef.current.srcObject = await navigator.mediaDevices.getUserMedia(
       {
         audio: true,
         video: true,
-      }
+      },
     );
     await localStreamRef.current.play();
   };
@@ -22,20 +35,7 @@ const Chat = (props) => {
     }
   };
 
-  const localStreamRef = useRef<HTMLVideoElement>(null);
-  const remoteStreamRef = useRef<HTMLVideoElement>(null);
-
-  const [localId, setLocalId] = useState("");
-  const [localVideoMuted, setLocalVideoMuted] = useState(true);
-  const [localVideoPlaysInline, setLocalVideoPlaysInline] = useState(true);
-
-  const [remoteId, setRemoteId] = useState("");
-  const [remoteVideoMuted, setRemoteVideoMuted] = useState(true);
-  const [remoteVideoPlaysInline, setRemoteVideoPlaysInline] = useState(false);
-
-  const [peer, setPeer] = useState(new Peer({ key: SKYWAY_API_KEY }));
-
-  window.addEventListener("popstate", (e) => {
+  window.addEventListener('popstate', (e) => {
     localStreamOff();
   });
 
@@ -52,14 +52,14 @@ const Chat = (props) => {
         ? peer.call(remoteId, localStreamRef.current.srcObject)
         : null;
 
-    mediaConnection.on("stream", async (stream: MediaStream) => {
+    mediaConnection.on('stream', async (stream: MediaStream) => {
       // Render remote stream for caller
       remoteStreamRef.current.srcObject = stream;
       setRemoteVideoPlaysInline(true);
       await remoteStreamRef.current.play().catch(console.error);
     });
 
-    mediaConnection.once("close", () => {
+    mediaConnection.once('close', () => {
       if (remoteStreamRef.current.srcObject instanceof MediaStream) {
         remoteStreamRef.current.srcObject
           .getTracks()
@@ -69,26 +69,26 @@ const Chat = (props) => {
     });
 
     document
-      .getElementById("close-trigger")
-      .addEventListener("click", () => mediaConnection.close(true));
+      .getElementById('close-trigger')
+      .addEventListener('click', () => mediaConnection.close(true));
   };
 
-  peer.once("open", (id: string) => setLocalId(id));
+  peer.once('open', (id: string) => setLocalId(id));
 
   // Register callee handler
-  peer.on("call", (mediaConnection) => {
+  peer.on('call', (mediaConnection) => {
     if (localStreamRef.current.srcObject instanceof MediaStream) {
       mediaConnection.answer(localStreamRef.current.srcObject);
     }
 
-    mediaConnection.on("stream", async (stream) => {
+    mediaConnection.on('stream', async (stream) => {
       // Render remote stream for callee
       remoteStreamRef.current.srcObject = stream;
       setRemoteVideoPlaysInline(true);
       await remoteStreamRef.current.play().catch(console.error);
     });
 
-    mediaConnection.once("close", () => {
+    mediaConnection.once('close', () => {
       if (remoteStreamRef.current.srcObject instanceof MediaStream) {
         remoteStreamRef.current.srcObject
           .getTracks()
@@ -98,10 +98,10 @@ const Chat = (props) => {
     });
 
     document
-      .getElementById("close-trigger")
-      .addEventListener("click", () => mediaConnection.close(true));
+      .getElementById('close-trigger')
+      .addEventListener('click', () => mediaConnection.close(true));
   });
-  peer.on("error", console.error);
+  peer.on('error', console.error);
 
   useEffect(() => {
     (async () => {
@@ -120,7 +120,7 @@ const Chat = (props) => {
               muted={remoteVideoMuted}
               ref={remoteStreamRef}
               playsInline={remoteVideoPlaysInline}
-            ></video>
+            />
           </div>
           <div className="local-stream">
             <video
@@ -128,7 +128,7 @@ const Chat = (props) => {
               muted={localVideoMuted}
               ref={localStreamRef}
               playsInline={localVideoPlaysInline}
-            ></video>
+            />
             <p>
               Your ID: <span id="local-id">{localId}</span>
             </p>
@@ -137,7 +137,7 @@ const Chat = (props) => {
               placeholder="Remote Peer ID"
               id="remote-id"
               onChange={(e) => setRemoteId(e.target.value)}
-            ></input>
+            />
             <button id="call-trigger" onClick={callTrigerClick}>
               Join
             </button>

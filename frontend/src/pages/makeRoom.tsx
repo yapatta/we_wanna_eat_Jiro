@@ -1,5 +1,6 @@
-import Layout from "../components/layout";
-import Button from "@material-ui/core/Button";
+import React, { useState, useEffect } from 'react';
+import Layout from '../components/layout';
+import Button from '@material-ui/core/Button';
 import {
   TextField,
   InputLabel,
@@ -9,31 +10,25 @@ import {
   Typography,
   Container,
   makeStyles,
-} from "@material-ui/core";
-import { useState, useEffect } from "react";
-import Link from "next/link";
+} from '@material-ui/core';
+import Link from 'next/link';
+import firebase from '../plugins/firebase';
+import { RoomDocument, CategoryDocument } from '../database/model';
+import { selectCategories } from '../database';
 
-import firebase from "../plugins/firebase";
-import {
-  RoomDocument,
-  UserDocument,
-  CategoryDocument,
-} from "../database/model";
-import {
-  insertRoomDocument,
-  selectCategories,
-  selectUserDocument,
-} from "../database/index";
+type makeRoomProps = {
+  categories: CategoryDocument[];
+};
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   form: {
-    width: "100%", // Fix IE 11 issue.
+    width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
   input: {
@@ -43,22 +38,22 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(3, 0, 2),
   },
   result: {
-    textAlign: "left",
+    textAlign: 'left',
     marginTop: theme.spacing(2),
   },
 }));
 
-const makeRoom = (props) => {
+const makeRoom = (props: makeRoomProps) => {
   const classes = useStyles();
 
-  const [roomName, setRoomName] = useState("");
-  const [roomDescription, setRoomDescription] = useState("");
+  const [roomName, setRoomName] = useState('');
+  const [roomDescription, setRoomDescription] = useState('');
   const [roomCategory, setRoomCategory] = useState<number>(0);
   const [newRoomFlag, setNewRoomFlag] = useState(false);
-  const [roomUUID, setRoomUUID] = useState("");
+  const [roomUUID, setRoomUUID] = useState('');
 
   const [currentUser, setCurrentUser] = useState<firebase.User>();
-  const [adminName, setAdminName] = useState("");
+  const [adminName, setAdminName] = useState('');
 
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
@@ -86,13 +81,13 @@ const makeRoom = (props) => {
 
   // FXME: 時間あるときにエラーバリデーションをalertじゃなく変更したい
   const validateNewRoom = (newRoom: RoomDocument) => {
-    if (newRoom.name === undefined || newRoom.name === "") {
-      alert("ルーム名を入力してください");
+    if (newRoom.name === undefined || newRoom.name === '') {
+      alert('ルーム名を入力してください');
       return false;
     }
 
-    if (newRoom.admin === undefined || newRoom.admin === "") {
-      alert("名前を入力して下さい");
+    if (newRoom.admin === undefined || newRoom.admin === '') {
+      alert('名前を入力して下さい');
       return false;
     }
 
@@ -101,13 +96,13 @@ const makeRoom = (props) => {
 
   const createRoom = async () => {
     if (!currentUser) {
-      alert("ログインしてください");
+      alert('ログインしてください');
       return false;
     }
 
     const newRoom: RoomDocument = {
       name: roomName,
-      admin_uid: currentUser.uid, // FIXME: Userを取り出すクエリを叩いて取得した値でuidを取り出すほうが良さそう
+      adminUid: currentUser.uid, // FIXME: Userを取り出すクエリを叩いて取得した値でuidを取り出すほうが良さそう
       admin: adminName,
       description: roomDescription,
       users: [], // FIXME: 初期状態でadminをusersに追加
@@ -115,7 +110,7 @@ const makeRoom = (props) => {
 
     if (validateNewRoom(newRoom)) {
       // FIXME: adminの名前を変更(queryを作る必要あり)
-      const res = await insertRoomDocument(roomCategory, newRoom);
+      // const res = await insertRoomDocument(roomCategory, newRoom);
       // FIXME: roomUUIDをセットする
       setNewRoomFlag(true);
     }
@@ -124,7 +119,7 @@ const makeRoom = (props) => {
   useEffect(() => {
     (async () => {
       if (currentUser) {
-        const doc = await selectUserDocument(currentUser.uid);
+        // const doc = await selectUserDocument(currentUser.uid);
         // FIXME: adminNameをDBから取得してsetAdminNameする
       }
     })();
@@ -150,10 +145,10 @@ const makeRoom = (props) => {
             <Typography>
               <Link
                 href={{
-                  pathname: "/room",
+                  pathname: '/room',
                   query: { index: `${roomUUID}` },
                 }}
-                as={"/room"}
+                as={'/room'}
               >
                 <a>部屋に入る</a>
               </Link>
@@ -212,11 +207,13 @@ const makeRoom = (props) => {
                     onClick={handleRoomCategoryChange}
                     style={{ width: 200 }}
                   >
-                    {props.categories.map((category) => (
-                      <MenuItem value={`${category.cid}`}>
-                        {category.name}
-                      </MenuItem>
-                    ))}
+                    {props.categories.map(
+                      (category: CategoryDocument, index: number) => (
+                        <MenuItem value={`${category.cid}`} key={index}>
+                          {category.name}
+                        </MenuItem>
+                      ),
+                    )}
                   </Select>
                 </Grid>
               </Grid>
@@ -242,7 +239,7 @@ makeRoom.getInitialProps = async ({ props }) => {
   const c = await selectCategories();
   const docs = await c.get();
 
-  let categories = [];
+  const categories = [];
   docs.forEach((doc) => {
     categories.push(doc.data());
   });

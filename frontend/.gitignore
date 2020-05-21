@@ -5,3 +5,6 @@
 yarn.lock
 
 dist
+
+# for webstorm
+.idea
