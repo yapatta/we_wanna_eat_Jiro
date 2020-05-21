@@ -1,5 +1,4 @@
 import React from 'react';
-import Link from 'next/link';
 import Layout from '../../components/layout';
 import RoomCard from '../../components/roomCard';
 import { Grid, Container } from '@material-ui/core';
@@ -19,9 +18,6 @@ const Categories = (props: CategoryProps) => {
             return <RoomCard key={index}>{room}</RoomCard>;
           })}
         </Grid>
-        <Link href="/">
-          <a>ホームに戻る</a>
-        </Link>
       </Container>
     </Layout>
   );
