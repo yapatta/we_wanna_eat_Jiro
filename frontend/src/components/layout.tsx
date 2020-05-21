@@ -50,9 +50,11 @@ const Layout = (props: LayoutProps) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            オンライン飲み会！！
-          </Typography>
+          <Link href="/">
+            <Typography variant="h6" className={classes.title}>
+              オンライン飲み会！！
+            </Typography>
+          </Link>{' '}
           {currentUser ? (
             <span>
               <Button color="inherit">
