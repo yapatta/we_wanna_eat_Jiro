@@ -5,7 +5,7 @@ import {
   updateRoomDocumentWhenLeaved,
   updateRoomDocumentWhenJoined,
   _insertCategoryDocument,
-  selectCategory,
+  selectCategory, updateUsername,
 } from './index';
 
 const developers = [
@@ -123,7 +123,16 @@ describe('カテゴリ追加メソッド', () => {
       // doc id指定してdocument
       await _insertCategoryDocument(i, c);
       const doc = await selectCategory(i);
-      doc.collection('rooms').add(await createTestRoomDocument());
+      await doc.collection('rooms').add(await createTestRoomDocument());
     }
   });
 });
+
+/**
+ * ルールをガバガバにしないとこれは叩け無い
+ */
+describe('ニックネームのアップデートメソッド', () => {
+  test('アップデートテスト', async () => {
+    await updateUsername('dGBaomqi1oddIrnj4wVuZtbaZWJ2','test hoge太郎');
+  })
+})
