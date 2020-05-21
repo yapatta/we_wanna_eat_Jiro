@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Peer from 'skyway-js';
-import { SKYWAY_API_KEY } from './env';
+import { SKYWAY_API_KEY } from '../env';
 import Layout from '../components/layout';
 import { makeStyles, Button } from '@material-ui/core';
-
+if (process.browser) {
+  const Peer = require('skyway-js');
+}
 const useStyles = makeStyles({
   myVideo: {},
   remoteStreams: {
@@ -15,9 +16,13 @@ const useStyles = makeStyles({
 const Room = (props) => {
   const classes = useStyles();
 
-  const jsLocalStream = document.getElementById('js-local-stream');
-  const jsRemoteStream = document.getElementById('js-remote-streams');
-  const jsLeaveTrigger = document.getElementById('js-leave-trigger');
+  if (process.browser) {
+    const peer = new Peer({ key: SKYWAY_API_KEY });
+    const jsLocalStream = document.getElementById('js-local-stream');
+    const jsRemoteStream = document.getElementById('js-remote-streams');
+    const jsLeaveTrigger = document.getElementById('js-leave-trigger');
+  }
+
 
   const localStreamRef = useRef(null);
 
@@ -44,7 +49,6 @@ const Room = (props) => {
 
   const [roomId, setRoomId] = useState('');
   const [roomMessages, setRoomMessages] = useState('');
-  const peer = new Peer({ key: SKYWAY_API_KEY });
   const [isJoined, setIsJoined] = useState(false);
 
   const joinTroggerClick = async () => {
