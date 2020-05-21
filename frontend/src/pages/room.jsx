@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Peer from 'skyway-js';
-import { SKYWAY_API_KEY } from './env';
+import { SKYWAY_API_KEY } from '../env';
 import Layout from '../components/layout';
-import {makeStyles, Button, Grid} from '@material-ui/core';
+import { makeStyles, Button, Grid } from '@material-ui/core';
+
 
 const useStyles = makeStyles({
   myVideo: {},
@@ -14,11 +14,20 @@ const useStyles = makeStyles({
 
 const Room = (props) => {
   const classes = useStyles();
+  let Peer;
+  let peer;
+  let jsLocalStream;
+  let jsRemoteStream;
+  let jsLeaveTrigger;
 
-  const roomElement = document.getElementById('js-rooms');
-  const jsLocalStream = document.getElementById('js-local-stream');
-  const jsRemoteStream = document.getElementById('js-remote-streams');
-  const jsLeaveTrigger = document.getElementById('js-leave-trigger');
+  if (process.browser) {
+    Peer = require('skyway-js');
+    peer = new Peer({ key: SKYWAY_API_KEY });
+    jsLocalStream = document.getElementById('js-local-stream');
+    jsRemoteStream = document.getElementById('js-remote-streams');
+    jsLeaveTrigger = document.getElementById('js-leave-trigger');
+  }
+
 
   const localStreamRef = useRef(null);
 
@@ -45,7 +54,6 @@ const Room = (props) => {
 
   const [roomId, setRoomId] = useState('');
   const [roomMessages, setRoomMessages] = useState('');
-  const peer = new Peer({ key: SKYWAY_API_KEY });
   const [isJoined, setIsJoined] = useState(false);
 
   const joinTroggerClick = async () => {
@@ -77,7 +85,8 @@ const Room = (props) => {
       newVideo.playsInline = true;
       newVideo.setAttribute('width', '100%');
       newVideo.setAttribute('data-peer-id', stream.peerId);
-      roomElement.append(grid);
+      newVideo.setAttribute('width', '105%');
+      jsRemoteStream.append(newVideo);
       await newVideo.play().catch(console.error);
     });
 
@@ -131,9 +140,9 @@ const Room = (props) => {
     <Layout>
       <div className="container">
         <h1 className="heading">Room example</h1>
-        <div className="room" >
-          <div className={classes.myVideo}>
-            <Grid container id="js-rooms" spacing={2}>
+        <div className="room">
+          <Grid container id="js-rooms" spacing={2}>
+            <div className={classes.myVideo}>
               <Grid item xs={12} md={6} lg={6}>
                 <video
                   id="js-local-stream"
@@ -144,8 +153,10 @@ const Room = (props) => {
                   height="100%"
                 />
               </Grid>
-            </Grid>
-            <input
+            </div>
+            <div className={classes.remoteStreams} id="js-remote-streams" />
+          </Grid>
+              <input
               type="text"
               placeholder="Room Name"
               id="js-room-id"
@@ -153,7 +164,7 @@ const Room = (props) => {
             />
             <Button
               id="js-leave-trigger"
-              style={{display: !isJoined ? 'none' : ''}}
+              style={{ display: !isJoined ? 'none' : '' }}
             >
               Leave
             </Button>
@@ -162,13 +173,12 @@ const Room = (props) => {
               id="js-join-trigger"
               color="primary"
               onClick={joinTroggerClick}
-              style={{display: isJoined ? 'none' : ''}}
+              style={{ display: isJoined ? 'none' : '' }}
             >
               Join
             </Button>
           </div>
 
-          <div className={classes.remoteStreams} id="js-remote-streams" />
           <div>
             <pre className="messages" id="js-messages">
               {roomMessages}
@@ -183,7 +193,6 @@ const Room = (props) => {
             前のページに戻る
           </button>
         </div>
-      </div>
     </Layout>
   );
 };
