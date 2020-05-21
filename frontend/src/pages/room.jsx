@@ -2,9 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { SKYWAY_API_KEY } from '../env';
 import Layout from '../components/layout';
 import { makeStyles, Button } from '@material-ui/core';
-if (process.browser) {
-  const Peer = require('skyway-js');
-}
+
+
 const useStyles = makeStyles({
   myVideo: {},
   remoteStreams: {
@@ -17,6 +16,7 @@ const Room = (props) => {
   const classes = useStyles();
 
   if (process.browser) {
+    const Peer = require('skyway-js');
     const peer = new Peer({ key: SKYWAY_API_KEY });
     const jsLocalStream = document.getElementById('js-local-stream');
     const jsRemoteStream = document.getElementById('js-remote-streams');
