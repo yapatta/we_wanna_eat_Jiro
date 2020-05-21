@@ -1,9 +1,9 @@
-import { CardContent, Typography, makeStyles } from "@material-ui/core";
-import Card from "@material-ui/core/Card";
-import { Grid } from "@material-ui/core";
+import { CardContent, Typography, makeStyles } from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import { Grid } from '@material-ui/core';
 
-import Link from "next/link";
-import React from "react";
+import Link from 'next/link';
+import React from 'react';
 
 const useStyles = makeStyles({});
 
@@ -21,10 +21,10 @@ const RoomCard = (props) => {
           <Typography>
             <Link
               href={{
-                pathname: "/room",
+                pathname: '/room',
                 query: { index: `${props.children.rid}` },
               }}
-              as={"/room"}
+              as={'/room'}
             >
               <a>部屋に入る</a>
             </Link>

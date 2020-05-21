@@ -1,24 +1,23 @@
-import { useState, useEffect, useRef } from "react";
-import Peer, { RoomStream } from "skyway-js";
-
-import { API_PATH, SKYWAY_API_KEY } from "./env";
-import Layout from "../components/layout";
-import { Grid, makeStyles, Button } from "@material-ui/core";
+import React, { useState, useEffect, useRef } from 'react';
+import Peer, { RoomStream } from 'skyway-js';
+import { API_PATH, SKYWAY_API_KEY } from './env';
+import Layout from '../components/layout';
+import { Grid, makeStyles, Button } from '@material-ui/core';
 
 const useStyles = makeStyles({
   myVideo: {},
   remoteStreams: {
-    display: "flex",
-    flexWrap: "wrap",
+    display: 'flex',
+    flexWrap: 'wrap',
   },
 });
 
 const Room = (props) => {
   const classes = useStyles();
 
-  const jsLocalStream = document.getElementById("js-local-stream");
-  const jsRemoteStream = document.getElementById("js-remote-streams");
-  const jsLeaveTrigger = document.getElementById("js-leave-trigger");
+  const jsLocalStream = document.getElementById('js-local-stream');
+  const jsRemoteStream = document.getElementById('js-remote-streams');
+  const jsLeaveTrigger = document.getElementById('js-leave-trigger');
 
   const localStreamRef = useRef(null);
 
@@ -27,7 +26,7 @@ const Room = (props) => {
       {
         audio: true,
         video: true,
-      }
+      },
     );
     await localStreamRef.current.play();
   };
@@ -43,8 +42,8 @@ const Room = (props) => {
     }
   };
 
-  const [roomId, setRoomId] = useState("");
-  const [roomMessages, setRoomMessages] = useState("");
+  const [roomId, setRoomId] = useState('');
+  const [roomMessages, setRoomMessages] = useState('');
   const [peer, setPeer] = useState(new Peer({ key: SKYWAY_API_KEY }));
   const [isJoined, setIsJoined] = useState(false);
 
@@ -55,37 +54,37 @@ const Room = (props) => {
     }
 
     const room = peer.joinRoom(roomId, {
-      mode: "mesh",
+      mode: 'mesh',
       stream: localStreamRef.current.srcObject,
     });
 
-    room.once("open", () => {
-      setRoomMessages(roomMessages + "=== You joined ===\n");
+    room.once('open', () => {
+      setRoomMessages(roomMessages + '=== You joined ===\n');
       setIsJoined(true);
     });
-    room.on("peerJoin", (peerId) => {
+    room.on('peerJoin', (peerId) => {
       setRoomMessages(roomMessages + `=== ${peerId} joined ===\n`);
     });
 
-    room.on("stream", async (stream) => {
-      const newVideo = document.createElement("video");
+    room.on('stream', async (stream) => {
+      const newVideo = document.createElement('video');
       newVideo.srcObject = stream;
       newVideo.playsInline = true;
-      newVideo.setAttribute("data-peer-id", stream.peerId);
-      newVideo.setAttribute("width", "25%");
+      newVideo.setAttribute('data-peer-id', stream.peerId);
+      newVideo.setAttribute('width', '25%');
       jsRemoteStream.append(newVideo);
       await newVideo.play().catch(console.error);
     });
 
-    room.on("data", ({ data, src }) => {
+    room.on('data', ({ data, src }) => {
       // Show a message sent to the room and who sent
       setRoomMessages(roomMessages + `${src}: ${data}\n`);
     });
 
     // for closing room members
-    room.on("peerLeave", (peerId) => {
+    room.on('peerLeave', (peerId) => {
       const remoteVideo = jsRemoteStream.querySelector(
-        `[data-peer-id=${peerId}]`
+        `[data-peer-id=${peerId}]`,
       );
 
       remoteVideo.srcObject.getTracks().forEach((track) => track.stop());
@@ -96,8 +95,8 @@ const Room = (props) => {
     });
 
     // for closing myself
-    room.once("close", () => {
-      setRoomMessages(roomMessages + "== You left ===\n");
+    room.once('close', () => {
+      setRoomMessages(roomMessages + '== You left ===\n');
       Array.from(jsRemoteStream.children).forEach((remoteVideo) => {
         remoteVideo.srcObject.getTracks().forEach((track) => track.stop());
         remoteVideo.srcObject = null;
@@ -106,14 +105,14 @@ const Room = (props) => {
     });
 
     jsLeaveTrigger.addEventListener(
-      "click",
+      'click',
       () => {
         setIsJoined(false);
         room.close();
       },
       {
         once: true,
-      }
+      },
     );
   };
 
@@ -135,7 +134,7 @@ const Room = (props) => {
               ref={localStreamRef}
               playsInline
               width="25%"
-            ></video>
+            />
             <input
               type="text"
               placeholder="Room Name"
@@ -144,7 +143,7 @@ const Room = (props) => {
             />
             <Button
               id="js-leave-trigger"
-              style={{ display: !isJoined ? "none" : "" }}
+              style={{ display: !isJoined ? 'none' : '' }}
             >
               Leave
             </Button>
@@ -153,13 +152,13 @@ const Room = (props) => {
               id="js-join-trigger"
               color="primary"
               onClick={joinTroggerClick}
-              style={{ display: isJoined ? "none" : "" }}
+              style={{ display: isJoined ? 'none' : '' }}
             >
               Join
             </Button>
           </div>
 
-          <div className={classes.remoteStreams} id="js-remote-streams"></div>
+          <div className={classes.remoteStreams} id="js-remote-streams" />
           <div>
             <pre className="messages" id="js-messages">
               {roomMessages}

@@ -1,48 +1,48 @@
-import firebase from "./../plugins/firebase";
-import { CategoryDocument, RoomDocument, UserDocument } from "./model";
+import firebase from '../plugins/firebase';
+import { CategoryDocument, RoomDocument, UserDocument } from './model';
 
 export const selectCategories = async () => {
   const db = firebase.firestore();
-  return db.collection("categories");
+  return db.collection('categories');
 };
 
 export const selectCategory = async (cid: number) => {
   const db = firebase.firestore();
-  return db.collection("categories").doc(`${cid}`);
+  return db.collection('categories').doc(`${cid}`);
 };
 
 export const selectRoomDocument = async (cid: number) => {
   const db = firebase.firestore();
-  return db.collection("categories").doc(`${cid}`).collection("rooms");
+  return db.collection('categories').doc(`${cid}`).collection('rooms');
 };
 
 export const selectUserDocument = async (id: string) => {
   const db = firebase.firestore();
-  return db.collection("users").doc(id);
+  return db.collection('users').doc(id);
 };
 
 export const insertRoomDocument = async (
   cid: number,
-  RoomDocument: RoomDocument
+  RoomDocument: RoomDocument,
 ) => {
   const db = firebase.firestore();
   return await db
-    .collection("categories")
+    .collection('categories')
     .doc(`${cid}`)
-    .collection("rooms")
+    .collection('rooms')
     .add(RoomDocument);
 };
 
 export const updateRoomDocumentWhenJoined = async (
   cid: number,
   docId: string,
-  UserDocument: UserDocument
+  UserDocument: UserDocument,
 ) => {
   const db = firebase.firestore();
   await db
-    .collection("categories")
+    .collection('categories')
     .doc(`${cid}`)
-    .collection("rooms")
+    .collection('rooms')
     .doc(docId)
     .update({
       users: firebase.firestore.FieldValue.arrayUnion(UserDocument),
@@ -52,13 +52,13 @@ export const updateRoomDocumentWhenJoined = async (
 export const updateRoomDocumentWhenLeaved = async (
   cid: number,
   docId: string,
-  UserDocument: UserDocument
+  UserDocument: UserDocument,
 ) => {
   const db = firebase.firestore();
   await db
-    .collection("categories")
+    .collection('categories')
     .doc(`${cid}`)
-    .collection("rooms")
+    .collection('rooms')
     .doc(docId)
     .update({
       users: firebase.firestore.FieldValue.arrayRemove(UserDocument),
@@ -67,11 +67,11 @@ export const updateRoomDocumentWhenLeaved = async (
 
 export const _insertCategoryDocument = async (
   docId: number,
-  categoryDocument: CategoryDocument
+  categoryDocument: CategoryDocument,
 ) => {
   const db = firebase.firestore();
   return await db
-    .collection("categories")
+    .collection('categories')
     .doc(`${docId}`)
     .set(categoryDocument);
 };
