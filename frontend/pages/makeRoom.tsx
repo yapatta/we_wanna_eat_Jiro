@@ -10,15 +10,20 @@ import {
   Container,
   makeStyles,
 } from "@material-ui/core";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
+import firebase from "../plugins/firebase";
 import {
   RoomDocument,
   UserDocument,
   CategoryDocument,
 } from "../database/model";
-import { insertRoomDocument, selectCategories } from "../database/index";
+import {
+  insertRoomDocument,
+  selectCategories,
+  selectUserDocument,
+} from "../database/index";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -52,8 +57,23 @@ const makeRoom = (props) => {
   const [newRoomFlag, setNewRoomFlag] = useState(false);
   const [roomUUID, setRoomUUID] = useState("");
 
-  const handleNameChange = (event) => {
+  const [currentUser, setCurrentUser] = useState<firebase.User>();
+  const [adminName, setAdminName] = useState("");
+
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      setCurrentUser(user);
+    } else {
+      setCurrentUser(null);
+    }
+  });
+
+  const handleRoomNameChange = (event) => {
     setRoomName(event.target.value);
+  };
+
+  const handleAdminNameChange = (event) => {
+    setAdminName(event.target.value);
   };
 
   const handleDescriptionChange = (event) => {
@@ -64,44 +84,51 @@ const makeRoom = (props) => {
     setRoomCategory(event.target.value);
   };
 
+  // FXME: 時間あるときにエラーバリデーションをalertじゃなく変更したい
   const validateNewRoom = (newRoom: RoomDocument) => {
     if (newRoom.name === undefined || newRoom.name === "") {
-      window.alert("ルーム名を入力してください");
+      alert("ルーム名を入力してください");
       return false;
     }
 
-    if (
-      newRoom.admin_uid === undefined ||
-      newRoom.admin_uid === "" ||
-      newRoom.admin === undefined ||
-      newRoom.admin === ""
-    ) {
-      window.alert("ログインしてから試してください");
+    if (newRoom.admin === undefined || newRoom.admin === "") {
+      alert("名前を入力して下さい");
       return false;
     }
 
     return true;
   };
+
   const createRoom = async () => {
-    /*
+    if (!currentUser) {
+      alert("ログインしてください");
+      return false;
+    }
+
     const newRoom: RoomDocument = {
       name: roomName,
-      admin_uid: props.childlen.uid, // adminは現在ログインしてるユーザ
-      admin: props.childlen.nickname,
+      admin_uid: currentUser.uid, // FIXME: Userを取り出すクエリを叩いて取得した値でuidを取り出すほうが良さそう
+      admin: adminName,
       description: roomDescription,
       users: [], // FIXME: 初期状態でadminをusersに追加
     };
 
     if (validateNewRoom(newRoom)) {
-      // roomを作成したときroomのUUIDを返すことってお願いしていいですか？
-      const uuid = await insertRoomDocument(roomCategory, newRoom); // FIXME: カテゴリを取得
-
+      // FIXME: adminの名前を変更(queryを作る必要あり)
+      const res = await insertRoomDocument(roomCategory, newRoom);
+      // FIXME: roomUUIDをセットする
       setNewRoomFlag(true);
-      // setRoomUUID(uuid);
     }
-    */
-    setNewRoomFlag(true);
   };
+
+  useEffect(() => {
+    (async () => {
+      if (currentUser) {
+        const doc = await selectUserDocument(currentUser.uid);
+        // FIXME: adminNameをDBから取得してsetAdminNameする
+      }
+    })();
+  }, [currentUser]);
 
   return (
     <Layout>
@@ -115,7 +142,7 @@ const makeRoom = (props) => {
               {roomName}
             </Typography>
             <Typography component="h3" className={classes.result}>
-              管理者: 田中
+              管理者: {adminName}
             </Typography>
             <Typography component="h4" className={classes.result}>
               説明: {roomDescription}
@@ -130,6 +157,9 @@ const makeRoom = (props) => {
               >
                 <a>部屋に入る</a>
               </Link>
+              <Link href="/">
+                <a>ホームに戻る</a>
+              </Link>
             </Typography>
           </div>
         ) : (
@@ -139,11 +169,20 @@ const makeRoom = (props) => {
             </Typography>
             <div className={classes.form}>
               <TextField
+                id="adminName"
+                label="名前"
+                value={adminName}
+                fullWidth
+                onChange={handleAdminNameChange}
+                variant="outlined"
+                className={classes.input}
+              />
+              <TextField
                 id="roomName"
                 label="ルーム名"
                 value={roomName}
                 fullWidth
-                onChange={handleNameChange}
+                onChange={handleRoomNameChange}
                 variant="outlined"
                 className={classes.input}
               />
@@ -173,8 +212,10 @@ const makeRoom = (props) => {
                     onClick={handleRoomCategoryChange}
                     style={{ width: 200 }}
                   >
-                    {props.categories.map((category, index) => (
-                      <MenuItem value={`${index}`}>{category.name}</MenuItem>
+                    {props.categories.map((category) => (
+                      <MenuItem value={`${category.cid}`}>
+                        {category.name}
+                      </MenuItem>
                     ))}
                   </Select>
                 </Grid>
