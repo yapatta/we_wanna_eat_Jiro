@@ -12,9 +12,15 @@ service cloud.firestore {
       allow write: if false;
       match /rooms/{room} {
         allow read: if true; // for debug from jest
-        allow create,update: if request.auth; // join room and create room
+        allow create,update: if request.auth.uid != null; // join room and create room
         allow delete: if request.auth.uid == resource.data.admin_uid;
       }
+    }
+    match /users/{user} {
+      allow read: if true;
+      allow create: if request.auth.uid != null; 
+      allow update: if request.auth.uid == resource.data.uid;
+      allow delete: if false; // deleteいらんでしょうw
     }
   }
 }

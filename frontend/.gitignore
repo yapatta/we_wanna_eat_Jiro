@@ -8,3 +8,5 @@ dist
 
 # for webstorm
 .idea
+
+.vercel
