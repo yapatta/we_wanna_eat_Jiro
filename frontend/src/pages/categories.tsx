@@ -1,12 +1,10 @@
-import fetch from "isomorphic-unfetch";
-import Link from "next/link";
-import { API_PATH } from "./env";
-import Layout from "../components/layout";
-import RoomCard from "../components/roomCard";
-import { Grid } from "@material-ui/core";
-import { RoomDocument } from "../database/model";
-import { selectRoomDocument } from "../database";
-import React from "react";
+import React from 'react';
+import Link from 'next/link';
+import Layout from '../components/layout';
+import RoomCard from '../components/roomCard';
+import { Grid } from '@material-ui/core';
+import { RoomDocument } from '../database/model';
+import { selectRoomDocument } from '../database';
 
 interface CategoryProps {
   rooms: RoomDocument[];
@@ -17,7 +15,7 @@ const Categories = (props: CategoryProps) => {
     <Layout>
       <Grid container>
         {props.rooms.map((room: RoomDocument, index: number) => {
-          return <RoomCard>{room}</RoomCard>;
+          return <RoomCard key={index}>{room}</RoomCard>;
         })}
       </Grid>
       <Link href="/">

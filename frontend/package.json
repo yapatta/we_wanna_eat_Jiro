@@ -6,7 +6,13 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "fmt": "prettier --write src/** && eslint src/**/* --fix "
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "fmt"
+    }
   },
   "keywords": [],
   "author": "",
@@ -24,7 +30,6 @@
     "eslint-plugin-jest": "^23.13.1",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-prettier": "^3.1.3",
-    "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-react-hooks": "^4.0.2",
     "firebase": "^7.14.3",
     "husky": "^4.2.5",
@@ -40,11 +45,12 @@
     "skyway-js": "^2.0.5"
   },
   "devDependencies": {
-    "@types/next": "^9.0.0",
-    "@types/react-dom": "^16.9.7",
     "@types/jest": "^25.2.1",
+    "@types/next": "^9.0.0",
     "@types/node": "^13.13.5",
     "@types/react": "^16.9.34",
+    "@types/react-dom": "^16.9.7",
+    "eslint-plugin-react": "^7.20.0",
     "jest": "^26.0.1",
     "jest-environment-uint8array": "^1.0.0",
     "ts-jest": "^25.5.1",
