@@ -20,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
   },
+  titleLink: { color: 'white', textDecoration: 'none' },
 }));
 
 type LayoutProps = {
@@ -50,8 +51,10 @@ const Layout = (props: LayoutProps) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            オンライン飲み会！！
+          <Typography variant="h6" className={classes.title} color="inherit">
+            <a href="/" className={classes.titleLink}>
+              オンライン飲み会！！
+            </a>
           </Typography>
           {currentUser ? (
             <span>
@@ -76,7 +79,7 @@ const Layout = (props: LayoutProps) => {
           )}
         </Toolbar>
       </AppBar>
-      <div>{props.children}</div>
+      {props.children}
     </div>
   );
 };
