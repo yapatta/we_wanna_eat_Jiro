@@ -13,8 +13,8 @@ import {
 } from '@material-ui/core';
 import Link from 'next/link';
 import firebase from '../plugins/firebase';
-import { RoomDocument, CategoryDocument } from '../database/model';
-import { selectCategories } from '../database';
+import {RoomDocument, CategoryDocument, UserDocument} from '../database/model';
+import {insertRoomDocument, selectCategories, selectUser, selectUserDocument, updateUsername} from '../database';
 
 type makeRoomProps = {
   categories: CategoryDocument[];
@@ -102,16 +102,17 @@ const makeRoom = (props: makeRoomProps) => {
 
     const newRoom: RoomDocument = {
       name: roomName,
-      adminUid: currentUser.uid, // FIXME: Userを取り出すクエリを叩いて取得した値でuidを取り出すほうが良さそう
+      adminUid: currentUser.uid,
       admin: adminName,
       description: roomDescription,
-      users: [], // FIXME: 初期状態でadminをusersに追加
+      users: [(await selectUser(currentUser.uid)) ]
     };
 
     if (validateNewRoom(newRoom)) {
-      // FIXME: adminの名前を変更(queryを作る必要あり)
-      // const res = await insertRoomDocument(roomCategory, newRoom);
-      // FIXME: roomUUIDをセットする
+      await insertRoomDocument(roomCategory, newRoom);
+      // nicknameの更新
+      await updateUsername(currentUser.uid, adminName);
+      setRoomUUID(currentUser.uid);
       setNewRoomFlag(true);
     }
   };
@@ -119,8 +120,8 @@ const makeRoom = (props: makeRoomProps) => {
   useEffect(() => {
     (async () => {
       if (currentUser) {
-        // const doc = await selectUserDocument(currentUser.uid);
-        // FIXME: adminNameをDBから取得してsetAdminNameする
+        const userDoc = await selectUser(currentUser.uid);
+        setAdminName(userDoc.nickname);
       }
     })();
   }, [currentUser]);

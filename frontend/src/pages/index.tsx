@@ -1,6 +1,6 @@
 import React from 'react';
 import fetch from 'isomorphic-unfetch';
-import { API_PATH } from './env';
+import { API_PATH } from '../env';
 import Layout from '../components/layout';
 import CategoryCard from '../components/categoryCard';
 import { Grid } from '@material-ui/core';
