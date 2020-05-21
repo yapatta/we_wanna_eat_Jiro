@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SKYWAY_API_KEY } from '../env';
 import Layout from '../components/layout';
-import {makeStyles, Button, Grid} from '@material-ui/core';
+import { makeStyles, Button, Grid } from '@material-ui/core';
 
 
 const useStyles = makeStyles({
@@ -85,6 +85,7 @@ const Room = (props) => {
       newVideo.playsInline = true;
       newVideo.setAttribute('width', '100%');
       newVideo.setAttribute('data-peer-id', stream.peerId);
+      newVideo.setAttribute('width', '100%');
       jsRemoteStream.append(grid);
       await newVideo.play().catch(console.error);
     });
@@ -139,20 +140,20 @@ const Room = (props) => {
     <Layout>
       <div className="container">
         <h1 className="heading">Room example</h1>
-        <div className="room" >
-          <div className={classes.myVideo}>
-            <Grid className={classes.remoteStreams} container id="js-rooms" spacing={2}>
-              <Grid item xs={12} md={6} lg={6}>
-                <video
-                  id="js-local-stream"
-                  muted
-                  ref={localStreamRef}
-                  playsinline
-                  width="100%"
-                />
-              </Grid>
+        <div className="room">
+          <Grid className={classes.remoteStreams} id="js-remote-streams" spacing={2}>
+            <Grid item xs={12} md={6} lg={6}>
+              <video
+                id="js-local-stream"
+                muted
+                ref={localStreamRef}
+                playsinline
+                width="100%"
+                height="100%"
+              />
             </Grid>
-            <input
+          </Grid>
+              <input
               type="text"
               placeholder="Room Name"
               id="js-room-id"
@@ -160,7 +161,7 @@ const Room = (props) => {
             />
             <Button
               id="js-leave-trigger"
-              style={{display: !isJoined ? 'none' : ''}}
+              style={{ display: !isJoined ? 'none' : '' }}
             >
               Leave
             </Button>
@@ -169,7 +170,7 @@ const Room = (props) => {
               id="js-join-trigger"
               color="primary"
               onClick={joinTroggerClick}
-              style={{display: isJoined ? 'none' : ''}}
+              style={{ display: isJoined ? 'none' : '' }}
             >
               Join
             </Button>
@@ -189,7 +190,6 @@ const Room = (props) => {
             前のページに戻る
           </button>
         </div>
-      </div>
     </Layout>
   );
 };
