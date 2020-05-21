@@ -86,7 +86,7 @@ const Room = (props) => {
       newVideo.setAttribute('width', '100%');
       newVideo.setAttribute('data-peer-id', stream.peerId);
       newVideo.setAttribute('width', '105%');
-      jsRemoteStream.append(newVideo);
+      jsRemoteStream.append(grid);
       await newVideo.play().catch(console.error);
     });
 
@@ -141,20 +141,17 @@ const Room = (props) => {
       <div className="container">
         <h1 className="heading">Room example</h1>
         <div className="room">
-          <Grid container id="js-rooms" spacing={2}>
-            <div className={classes.myVideo}>
-              <Grid item xs={12} md={6} lg={6}>
-                <video
-                  id="js-local-stream"
-                  muted
-                  ref={localStreamRef}
-                  playsinline
-                  width="100%"
-                  height="100%"
-                />
-              </Grid>
-            </div>
-            <div className={classes.remoteStreams} id="js-remote-streams" />
+          <Grid className={classes.remoteStreams} id="js-remote-streams" spacing={2}>
+            <Grid item xs={12} md={6} lg={6}>
+              <video
+                id="js-local-stream"
+                muted
+                ref={localStreamRef}
+                playsinline
+                width="100%"
+                height="100%"
+              />
+            </Grid>
           </Grid>
               <input
               type="text"
