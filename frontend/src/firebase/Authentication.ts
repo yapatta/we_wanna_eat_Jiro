@@ -1,6 +1,6 @@
 import firebase from '../plugins/firebase';
 import { UserDocument } from '../database/model';
-import { createUser, isCreatedUser } from '../database';
+import { insertUser, isCreatedUser } from '../database';
 
 export function getCurrentUser(): firebase.User {
   const { currentUser } = firebase.auth();
@@ -28,7 +28,7 @@ export const handleGoogleLogin = async () => {
       introduction: '初めまして！よろしくお願いします！',
       evaluation: 3,
     };
-    await createUser(userDoc);
+    await insertUser(userDoc);
   }
 };
 
