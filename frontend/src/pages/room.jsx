@@ -85,7 +85,7 @@ const Room = (props) => {
       newVideo.playsInline = true;
       newVideo.setAttribute('width', '100%');
       newVideo.setAttribute('data-peer-id', stream.peerId);
-      newVideo.setAttribute('width', '105%');
+      newVideo.setAttribute('width', '100%');
       jsRemoteStream.append(grid);
       await newVideo.play().catch(console.error);
     });
