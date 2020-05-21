@@ -10,6 +10,7 @@
     "prettier/prettier": "error",
     "@typescript-eslint/no-var-requires": 1,
     "@typescript-eslint/explicit-function-return-type": 0,
+    "@typescript-eslint/no-explicit-any": 0,
     "@typescript-eslint/indent": 0,
     "react/jsx-filename-extension": [
       1,

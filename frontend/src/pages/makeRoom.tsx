@@ -13,12 +13,12 @@ import {
 } from '@material-ui/core';
 import Link from 'next/link';
 import firebase from '../plugins/firebase';
-import { RoomDocument } from '../database/model';
-import {
-  insertRoomDocument,
-  selectCategories,
-  selectUserDocument,
-} from '../database';
+import { RoomDocument, CategoryDocument } from '../database/model';
+import { selectCategories } from '../database';
+
+type makeRoomProps = {
+  categories: CategoryDocument[];
+};
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const makeRoom = (props) => {
+const makeRoom = (props: makeRoomProps) => {
   const classes = useStyles();
 
   const [roomName, setRoomName] = useState('');
@@ -110,7 +110,7 @@ const makeRoom = (props) => {
 
     if (validateNewRoom(newRoom)) {
       // FIXME: adminの名前を変更(queryを作る必要あり)
-      const res = await insertRoomDocument(roomCategory, newRoom);
+      // const res = await insertRoomDocument(roomCategory, newRoom);
       // FIXME: roomUUIDをセットする
       setNewRoomFlag(true);
     }
@@ -119,7 +119,7 @@ const makeRoom = (props) => {
   useEffect(() => {
     (async () => {
       if (currentUser) {
-        const doc = await selectUserDocument(currentUser.uid);
+        // const doc = await selectUserDocument(currentUser.uid);
         // FIXME: adminNameをDBから取得してsetAdminNameする
       }
     })();
@@ -207,11 +207,13 @@ const makeRoom = (props) => {
                     onClick={handleRoomCategoryChange}
                     style={{ width: 200 }}
                   >
-                    {props.categories.map((category) => (
-                      <MenuItem value={`${category.cid}`}>
-                        {category.name}
-                      </MenuItem>
-                    ))}
+                    {props.categories.map(
+                      (category: CategoryDocument, index: number) => (
+                        <MenuItem value={`${category.cid}`} key={index}>
+                          {category.name}
+                        </MenuItem>
+                      ),
+                    )}
                   </Select>
                 </Grid>
               </Grid>

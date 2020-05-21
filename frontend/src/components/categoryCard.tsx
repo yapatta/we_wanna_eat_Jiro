@@ -1,18 +1,16 @@
-import { CardContent, Typography, makeStyles } from '@material-ui/core';
+import { CardContent, Typography } from '@material-ui/core';
 import Card from '@material-ui/core/Card';
 import { Grid } from '@material-ui/core';
 
 import Link from 'next/link';
 import React from 'react';
+import { CategoryDocument } from '../database/model';
 
-const useStyles = makeStyles({
-  card: {
-    margin: 'auto',
-  },
-});
+type CategoryCardProps = {
+  children: CategoryDocument;
+};
 
-const CategoryCard = (props) => {
-  const classes = useStyles();
+const CategoryCard = (props: CategoryCardProps) => {
   return (
     <Grid item xs={12} md={6} lg={4}>
       <Card>

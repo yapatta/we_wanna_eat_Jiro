@@ -22,7 +22,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Layout = ({ children }) => {
+type LayoutProps = {
+  children: any;
+};
+
+const Layout = (props: LayoutProps) => {
   const classes = useStyles();
   const [currentUser, setCurrentUser] = useState<firebase.User>();
 
@@ -72,7 +76,7 @@ const Layout = ({ children }) => {
           )}
         </Toolbar>
       </AppBar>
-      <div>{children}</div>
+      <div>{props.children}</div>
     </div>
   );
 };
