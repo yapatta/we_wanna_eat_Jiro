@@ -14,13 +14,18 @@ const useStyles = makeStyles({
 
 const Room = (props) => {
   const classes = useStyles();
+  let Peer;
+  let peer;
+  let jsLocalStream;
+  let jsRemoteStream;
+  let jsLeaveTrigger;
 
   if (process.browser) {
-    const Peer = require('skyway-js');
-    const peer = new Peer({ key: SKYWAY_API_KEY });
-    const jsLocalStream = document.getElementById('js-local-stream');
-    const jsRemoteStream = document.getElementById('js-remote-streams');
-    const jsLeaveTrigger = document.getElementById('js-leave-trigger');
+    Peer = require('skyway-js');
+    peer = new Peer({ key: SKYWAY_API_KEY });
+    jsLocalStream = document.getElementById('js-local-stream');
+    jsRemoteStream = document.getElementById('js-remote-streams');
+    jsLeaveTrigger = document.getElementById('js-leave-trigger');
   }
 
 
