@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SKYWAY_API_KEY } from '../env';
 import Layout from '../components/layout';
-import { makeStyles, Button, Grid } from '@material-ui/core';
+import { makeStyles, Button, Grid, Container } from '@material-ui/core';
 
 const useStyles = makeStyles({
   myVideo: {},
@@ -75,6 +75,7 @@ const Room = (props) => {
 
     room.on('stream', async (stream) => {
       const grid = document.createElement('div');
+      grid.setAttribute('id', stream.peerId);
       grid.setAttribute(
         'class',
         'MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 MuiGrid-grid-lg-6',
@@ -85,8 +86,7 @@ const Room = (props) => {
       newVideo.srcObject = stream;
       newVideo.playsInline = true;
       newVideo.setAttribute('width', '100%');
-      newVideo.setAttribute('data-peer-id', stream.peerId);
-      newVideo.setAttribute('width', '100%');
+      newVideo.setAttribute('height', '100%');
       jsRemoteStream.append(grid);
       await newVideo.play().catch(console.error);
     });
@@ -98,13 +98,13 @@ const Room = (props) => {
 
     // for closing room members
     room.on('peerLeave', (peerId) => {
-      const remoteVideo = jsRemoteStream.querySelector(
-        `[data-peer-id=${peerId}]`,
-      );
+      const remoteVideoContainer = jsRemoteStream.querySelector(`#${peerId}`);
 
-      remoteVideo.srcObject.getTracks().forEach((track) => track.stop());
-      remoteVideo.srcObject = null;
-      remoteVideo.remove();
+      remoteVideoContainer.children[0].srcObject
+        .getTracks()
+        .forEach((track) => track.stop());
+      remoteVideoContainer.children[0].srcObject = null;
+      remoteVideoContainer.remove();
 
       setRoomMessages(roomMessages + `=== ${peerId} left ===\n`);
     });
@@ -112,11 +112,15 @@ const Room = (props) => {
     // for closing myself
     room.once('close', () => {
       setRoomMessages(roomMessages + '== You left ===\n');
-      Array.from(jsRemoteStream.children).forEach((remoteVideo) => {
-        remoteVideo.srcObject.getTracks().forEach((track) => track.stop());
-        remoteVideo.srcObject = null;
-        remoteVideo.remove();
-      });
+      jsRemoteStream
+        .querySelectorAll('div:not(#my-video)')
+        .forEach((remoteVideoContainer) => {
+          remoteVideoContainer.children[0].srcObject
+            .getTracks()
+            .forEach((track) => track.stop());
+          remoteVideoContainer.children[0].srcObject = null;
+          remoteVideoContainer.remove();
+        });
     });
 
     jsLeaveTrigger.addEventListener(
@@ -139,25 +143,30 @@ const Room = (props) => {
 
   return (
     <Layout>
-      <div className="container">
+      <Container maxWidth="xl">
         <h1 className="heading">Room example</h1>
-        <div className="room">
-          <Grid
-            className={classes.remoteStreams}
-            id="js-remote-streams"
-            spacing={2}
-          >
-            <Grid item xs={12} md={6} lg={6}>
-              <video
-                id="js-local-stream"
-                muted
-                ref={localStreamRef}
-                playsinline
-                width="100%"
-                height="100%"
-              />
-            </Grid>
+        <Grid
+          container
+          className={classes.remoteStreams}
+          id="js-remote-streams"
+          spacing={2}
+        >
+          <Grid id="my-video" item xs={12} md={6} lg={6}>
+            <video
+              id="js-local-stream"
+              muted
+              ref={localStreamRef}
+              playsinline
+              width="100%"
+              height="100%"
+            />
           </Grid>
+        </Grid>
+      </Container>
+
+      {/*移行する*/}
+      <Grid container>
+        <Grid item xs={12} md={6} lg={6}>
           <input
             type="text"
             placeholder="Room Name"
@@ -179,22 +188,14 @@ const Room = (props) => {
           >
             Join
           </Button>
-        </div>
 
-        <div>
-          <pre className="messages" id="js-messages">
-            {roomMessages}
-          </pre>
-        </div>
-        <button
-          onClick={async () => {
-            await localStreamOff();
-            history.back();
-          }}
-        >
-          前のページに戻る
-        </button>
-      </div>
+          <div>
+            <pre className="messages" id="js-messages">
+              {roomMessages}
+            </pre>
+          </div>
+        </Grid>
+      </Grid>
     </Layout>
   );
 };
