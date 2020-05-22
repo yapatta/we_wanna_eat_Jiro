@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { SKYWAY_API_KEY } from '../../env';
-import Layout from '../../components/layout';
+import { useRouter } from 'next/router';
+import { SKYWAY_API_KEY } from '../../../env';
+import Layout from '../../../components/layout';
 import {
   TextField,
   makeStyles,
@@ -8,7 +9,7 @@ import {
   Grid,
   Container,
 } from '@material-ui/core';
-import { selectRoomDocument } from '../../database';
+import { selectRoomDocument } from '../../../database';
 
 const useStyles = makeStyles({
   myVideo: {},
@@ -60,6 +61,8 @@ const Room = (props) => {
   const [userName, setUserName] = useState('');
   const [roomMessages, setRoomMessages] = useState('');
   const [isJoined, setIsJoined] = useState(false);
+  const router = useRouter();
+  const roomId = router.query.rid;
 
   const handleUserNameChange = (event) => {
     setUserName(event.target.value);
@@ -71,7 +74,7 @@ const Room = (props) => {
       return;
     }
 
-    const room = peer.joinRoom(props.id, {
+    const room = peer.joinRoom(roomId, {
       mode: 'mesh',
       stream: localStreamRef.current.srcObject,
     });
@@ -156,7 +159,7 @@ const Room = (props) => {
   return (
     <Layout>
       <Container maxWidth="xl">
-        <h1 className="heading">{props.doc.name}</h1>
+        <h1 className="heading">ちんこ</h1>
         <Grid
           container
           className={classes.remoteStreams}
@@ -211,17 +214,6 @@ const Room = (props) => {
       </Grid>
     </Layout>
   );
-};
-
-Room.getInitialProps = async (props) => {
-  const ids = props.query.ids;
-  const cid = ids[0];
-  const rid = ids[1];
-  const res = await selectRoomDocument(Number(cid), rid);
-  const doc = await res.get();
-  const room = doc.data();
-  const id = doc.id;
-  return { ...props, room, id };
 };
 
 export default Room;

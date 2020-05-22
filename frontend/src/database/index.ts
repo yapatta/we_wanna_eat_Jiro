@@ -1,6 +1,10 @@
 import firebase from '../plugins/firebase';
-import {CategoryDocument, RoomCardProp, RoomDocument, UserDocument} from './model';
-import {id} from "@firebase/storage/dist/src/implementation/backoff";
+import {
+  CategoryDocument,
+  RoomCardProp,
+  RoomDocument,
+  UserDocument,
+} from './model';
 
 export const selectCategories = async () => {
   const db = firebase.firestore();
@@ -111,15 +115,15 @@ export const updateUsername = async (uid: string, nickname: string) => {
 };
 
 export const getRoomCardProps = async (cid: number) => {
-  const rooms =await  (await selectRoomDocuments(cid)).get();
+  const rooms = await (await selectRoomDocuments(cid)).get();
   const roomCardProps: RoomCardProp[] = [];
   rooms.forEach((doc) => {
     const rcp: RoomCardProp = {
       ...(doc.data() as RoomDocument),
       cid: cid,
-      rid: doc.id
-    }
+      rid: doc.id,
+    };
     roomCardProps.push(rcp);
-  } )
+  });
   return roomCardProps;
-}
+};
