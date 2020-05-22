@@ -3,7 +3,6 @@ import { SKYWAY_API_KEY } from '../env';
 import Layout from '../components/layout';
 import { makeStyles, Button, Grid } from '@material-ui/core';
 
-
 const useStyles = makeStyles({
   myVideo: {},
   remoteStreams: {
@@ -27,7 +26,6 @@ const Room = (props) => {
     jsRemoteStream = document.getElementById('js-remote-streams');
     jsLeaveTrigger = document.getElementById('js-leave-trigger');
   }
-
 
   const localStreamRef = useRef(null);
 
@@ -77,9 +75,12 @@ const Room = (props) => {
 
     room.on('stream', async (stream) => {
       const grid = document.createElement('div');
-      grid.setAttribute('class', 'MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 MuiGrid-grid-lg-6');
+      grid.setAttribute(
+        'class',
+        'MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 MuiGrid-grid-lg-6',
+      );
       const newVideo = document.createElement('video');
-      newVideo.setAttribute('id', "js-local-stream");
+      newVideo.setAttribute('id', 'js-local-stream');
       grid.append(newVideo);
       newVideo.srcObject = stream;
       newVideo.playsInline = true;
@@ -141,7 +142,11 @@ const Room = (props) => {
       <div className="container">
         <h1 className="heading">Room example</h1>
         <div className="room">
-          <Grid className={classes.remoteStreams} id="js-remote-streams" spacing={2}>
+          <Grid
+            className={classes.remoteStreams}
+            id="js-remote-streams"
+            spacing={2}
+          >
             <Grid item xs={12} md={6} lg={6}>
               <video
                 id="js-local-stream"
@@ -153,43 +158,43 @@ const Room = (props) => {
               />
             </Grid>
           </Grid>
-              <input
-              type="text"
-              placeholder="Room Name"
-              id="js-room-id"
-              onChange={(e) => setRoomId(e.target.value)}
-            />
-            <Button
-              id="js-leave-trigger"
-              style={{ display: !isJoined ? 'none' : '' }}
-            >
-              Leave
-            </Button>
-            <Button
-              variant="contained"
-              id="js-join-trigger"
-              color="primary"
-              onClick={joinTroggerClick}
-              style={{ display: isJoined ? 'none' : '' }}
-            >
-              Join
-            </Button>
-          </div>
-
-          <div>
-            <pre className="messages" id="js-messages">
-              {roomMessages}
-            </pre>
-          </div>
-          <button
-            onClick={async () => {
-              await localStreamOff();
-              history.back();
-            }}
+          <input
+            type="text"
+            placeholder="Room Name"
+            id="js-room-id"
+            onChange={(e) => setRoomId(e.target.value)}
+          />
+          <Button
+            id="js-leave-trigger"
+            style={{ display: !isJoined ? 'none' : '' }}
           >
-            前のページに戻る
-          </button>
+            Leave
+          </Button>
+          <Button
+            variant="contained"
+            id="js-join-trigger"
+            color="primary"
+            onClick={joinTroggerClick}
+            style={{ display: isJoined ? 'none' : '' }}
+          >
+            Join
+          </Button>
         </div>
+
+        <div>
+          <pre className="messages" id="js-messages">
+            {roomMessages}
+          </pre>
+        </div>
+        <button
+          onClick={async () => {
+            await localStreamOff();
+            history.back();
+          }}
+        >
+          前のページに戻る
+        </button>
+      </div>
     </Layout>
   );
 };
