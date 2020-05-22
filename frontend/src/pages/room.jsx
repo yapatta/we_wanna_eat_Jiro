@@ -88,7 +88,6 @@ const Room = (props) => {
       newVideo.setAttribute('width', '100%');
       newVideo.setAttribute('height', '100%');
       jsRemoteStream.append(grid);
-      console.log('test');
       await newVideo.play().catch(console.error);
     });
 
