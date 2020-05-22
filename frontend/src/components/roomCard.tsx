@@ -3,7 +3,7 @@ import Card from '@material-ui/core/Card';
 import { Grid, makeStyles } from '@material-ui/core';
 
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { RoomDocument } from '../database/model';
 
 type RoomCardProps = {
@@ -38,10 +38,10 @@ const RoomCard = (props: RoomCardProps) => {
           <Typography>
             <Link
               href={{
-                pathname: '/room',
-                query: { index: `2` },
+                pathname: `/room/`,
+                query: { index: 2 },
               }}
-              as={'/room'}
+              as={`room`}
             >
               <Button
                 variant="contained"
