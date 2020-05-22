@@ -13,13 +13,13 @@ import {
 
 const useStyles = makeStyles({
   remoteStreams: {
-    height: `calc(100vh - 56)`,
+    // height: '100vh',
     // display: 'flex',
     // flexWrap: 'wrap',
   },
   videoContainer: {
     backgroundColor: 'gray',
-  }
+  },
 });
 
 const Room = (props) => {
@@ -88,7 +88,10 @@ const Room = (props) => {
       // gridListTitle
       const gridListTitleRoot = document.createElement('li');
       gridListTitleRoot.setAttribute('id', stream.peerId);
-      gridListTitleRoot.setAttribute('class', 'MuiGridListTile-tile-root makeStyles-videoContainer-2');
+      gridListTitleRoot.setAttribute(
+        'class',
+        'MuiGridListTile-tile-root makeStyles-videoContainer-2',
+      );
       gridListTitleRoot.setAttribute('style', 'width: 50%; padding: 1px;');
       const gridListTitleVideo = document.createElement('div');
       gridListTitleVideo.setAttribute('class', 'MuiGridListTile-tile');
@@ -132,10 +135,10 @@ const Room = (props) => {
     room.on('peerLeave', (peerId) => {
       const remoteVideoContainer = jsRemoteStream.querySelector(`#${peerId}`);
 
-      remoteVideoContainer.children[0].srcObject
+      remoteVideoContainer.children[0].children[0].srcObject
         .getTracks()
         .forEach((track) => track.stop());
-      remoteVideoContainer.children[0].srcObject = null;
+      remoteVideoContainer.children[0].children[0].srcObject = null;
       remoteVideoContainer.remove();
 
       setRoomMessages(roomMessages + `=== ${peerId} left ===\n`);
@@ -145,12 +148,12 @@ const Room = (props) => {
     room.once('close', () => {
       setRoomMessages(roomMessages + '== You left ===\n');
       jsRemoteStream
-        .querySelectorAll('div:not(#my-video)')
+        .querySelectorAll('li:not(#my-video)')
         .forEach((remoteVideoContainer) => {
-          remoteVideoContainer.children[0].srcObject
+          remoteVideoContainer.children[0].children[0].srcObject
             .getTracks()
             .forEach((track) => track.stop());
-          remoteVideoContainer.children[0].srcObject = null;
+          remoteVideoContainer.children[0].children[0].srcObject = null;
           remoteVideoContainer.remove();
         });
     });
@@ -183,10 +186,7 @@ const Room = (props) => {
           cols={2}
           spacing={2}
         >
-          <GridListTile
-            className={classes.videoContainer}
-            id="my-video"
-          >
+          <GridListTile className={classes.videoContainer} id="my-video">
             <video
               id="js-local-stream"
               muted
