@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "fmt": "prettier --write src/** && eslint src/**/* --fix "
+    "fmt": "prettier --write src/** && eslint --ext .js,.jsx,.ts,.tsx src/**/* --fix "
   },
   "husky": {
     "hooks": {

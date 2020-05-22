@@ -13,8 +13,18 @@ import {
 } from '@material-ui/core';
 import Link from 'next/link';
 import firebase from '../plugins/firebase';
-import {RoomDocument, CategoryDocument, UserDocument} from '../database/model';
-import {insertRoomDocument, selectCategories, selectUser, selectUserDocument, updateUsername} from '../database';
+import {
+  RoomDocument,
+  CategoryDocument,
+  UserDocument,
+} from '../database/model';
+import {
+  insertRoomDocument,
+  selectCategories,
+  selectUser,
+  selectUserDocument,
+  updateUsername,
+} from '../database';
 
 type makeRoomProps = {
   categories: CategoryDocument[];
@@ -105,7 +115,7 @@ const makeRoom = (props: makeRoomProps) => {
       adminUid: currentUser.uid,
       admin: adminName,
       description: roomDescription,
-      users: [(await selectUser(currentUser.uid)) ]
+      users: [await selectUser(currentUser.uid)],
     };
 
     if (validateNewRoom(newRoom)) {
