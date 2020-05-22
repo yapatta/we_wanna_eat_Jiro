@@ -13,9 +13,13 @@ import {
 
 const useStyles = makeStyles({
   remoteStreams: {
+    height: `calc(100vh - 56)`,
     // display: 'flex',
     // flexWrap: 'wrap',
   },
+  videoContainer: {
+    backgroundColor: 'gray',
+  }
 });
 
 const Room = (props) => {
@@ -84,7 +88,7 @@ const Room = (props) => {
       // gridListTitle
       const gridListTitleRoot = document.createElement('li');
       gridListTitleRoot.setAttribute('id', stream.peerId);
-      gridListTitleRoot.setAttribute('class', 'MuiGridListTile-tile-root');
+      gridListTitleRoot.setAttribute('class', 'MuiGridListTile-tile-root makeStyles-videoContainer-2');
       gridListTitleRoot.setAttribute('style', 'width: 50%; padding: 1px;');
       const gridListTitleVideo = document.createElement('div');
       gridListTitleVideo.setAttribute('class', 'MuiGridListTile-tile');
@@ -110,6 +114,7 @@ const Room = (props) => {
       gridListTitleBar.append(gridListTitleWrap);
       const gridListTitle = document.createElement('div');
       gridListTitle.setAttribute('class', 'MuiGridListTileBar-title');
+      // TODO ここでユーザーの表示名を入れる
       const userName = document.createTextNode('TaKa');
       gridListTitle.append(userName);
       gridListTitleWrap.append(gridListTitle);
@@ -178,7 +183,10 @@ const Room = (props) => {
           cols={2}
           spacing={2}
         >
-          <GridListTile id="my-video">
+          <GridListTile
+            className={classes.videoContainer}
+            id="my-video"
+          >
             <video
               id="js-local-stream"
               muted
@@ -187,7 +195,10 @@ const Room = (props) => {
               width="100%"
               height="100%"
             />
-            <GridListTileBar title="やぱった" />
+            <GridListTileBar
+              // TODO ユーザーの表示名
+              title="やぱった"
+            />
           </GridListTile>
         </GridList>
       </Container>
