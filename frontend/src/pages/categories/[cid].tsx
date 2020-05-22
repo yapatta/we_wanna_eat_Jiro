@@ -2,11 +2,11 @@ import React from 'react';
 import Layout from '../../components/layout';
 import RoomCard from '../../components/roomCard';
 import { Grid, Container } from '@material-ui/core';
-import { RoomDocument } from '../../database/model';
-import { selectRoomDocuments } from '../../database';
+import { RoomCardProp } from '../../database/model';
+import { getRoomCardProps } from '../../database/index';
 
 interface CategoryProps {
-  rooms: RoomDocument[];
+  roomCards: RoomCardProp[];
 }
 
 const Categories = (props: CategoryProps) => {
@@ -14,8 +14,8 @@ const Categories = (props: CategoryProps) => {
     <Layout>
       <Container maxWidth="lg">
         <Grid container>
-          {props.rooms.map((room: RoomDocument, index: number) => {
-            return <RoomCard key={index}>{room}</RoomCard>;
+          {props.roomCards.map((roomCard: RoomCardProp, index: number) => {
+            return <RoomCard key={index}>{roomCard}</RoomCard>;
           })}
         </Grid>
       </Container>
@@ -24,10 +24,7 @@ const Categories = (props: CategoryProps) => {
 };
 
 Categories.getInitialProps = async (props) => {
-  const res = await selectRoomDocuments(Number(props.query.cid));
-  const rooms: RoomDocument[] = [];
-  const docs = await res.get();
-  docs.forEach((doc) => rooms.push(doc.data() as RoomDocument));
-  return { rooms };
+  const roomCards = await getRoomCardProps(Number(props.query.cid));
+  return { roomCards };
 };
 export default Categories;
