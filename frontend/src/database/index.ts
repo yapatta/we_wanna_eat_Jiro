@@ -97,6 +97,6 @@ export const _insertCategoryDocument = async (
 export const updateUsername = async (uid: string, nickname: string) => {
   const db = firebase.firestore();
   await db.collection('users').doc(uid).update({
-    nickname
+    nickname,
   });
-}
+};

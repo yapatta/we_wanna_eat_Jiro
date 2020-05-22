@@ -5,7 +5,8 @@ import {
   updateRoomDocumentWhenLeaved,
   updateRoomDocumentWhenJoined,
   _insertCategoryDocument,
-  selectCategory, updateUsername,
+  selectCategory,
+  updateUsername,
 } from './index';
 
 const developers = [
@@ -133,6 +134,6 @@ describe('カテゴリ追加メソッド', () => {
  */
 describe('ニックネームのアップデートメソッド', () => {
   test('アップデートテスト', async () => {
-    await updateUsername('dGBaomqi1oddIrnj4wVuZtbaZWJ2','test hoge太郎');
-  })
-})
+    await updateUsername('dGBaomqi1oddIrnj4wVuZtbaZWJ2', 'test hoge太郎');
+  });
+});
