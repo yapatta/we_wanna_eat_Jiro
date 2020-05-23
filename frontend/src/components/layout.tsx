@@ -65,7 +65,7 @@ const Layout = (props: LayoutProps) => {
                   }}
                   as={'/makeRoom'}
                 >
-                  <span style={{ color: 'white' }}> 部屋を作る</span>
+                  <span style={{ color: 'black' }}> 部屋を作る</span>
                 </Link>
               </Button>
               <Button color="inherit" onClick={handleLogout}>
