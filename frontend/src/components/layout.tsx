@@ -51,9 +51,16 @@ const Layout = (props: LayoutProps) => {
           >
             <MenuIcon />
           </IconButton>
-          <a href="/" className={classes.titleLink}>
-            <img src="/static/logo.png" width="147px" height="64px"  alt="logo"/>
-          </a>
+          <IconButton>
+            <Link
+              href={{
+                pathname: '/',
+              }}
+              as={'/'}
+            >
+              <img src="/static/logo.svg" alt="logo"/>
+            </Link>
+          </IconButton>
           {currentUser ? (
             <span>
               <Button color="inherit">
