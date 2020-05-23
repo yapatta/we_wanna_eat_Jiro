@@ -3,19 +3,25 @@ import { useRouter } from 'next/router';
 import { SKYWAY_API_KEY } from '../../../env';
 import Layout from '../../../components/layout';
 import {
-  TextField,
   makeStyles,
   Button,
-  Grid
+  Grid,
   Container,
+  GridListTile,
+  GridListTileBar,
+  GridList,
+  TextField,
 } from '@material-ui/core';
 import { selectRoomDocument } from '../../../database';
 
 const useStyles = makeStyles({
-  myVideo: {},
   remoteStreams: {
-    display: 'flex',
-    flexWrap: 'wrap',
+    // height: '100vh',
+    // display: 'flex',
+    // flexWrap: 'wrap',
+  },
+  videoContainer: {
+    backgroundColor: 'gray',
   },
 });
 
@@ -88,21 +94,44 @@ const Room = (props) => {
     });
 
     room.on('stream', async (stream) => {
-      const grid = document.createElement('div');
-      grid.setAttribute('id', stream.peerId);
-      grid.setAttribute(
+      // gridListTitle
+      const gridListTitleRoot = document.createElement('li');
+      gridListTitleRoot.setAttribute('id', stream.peerId);
+      gridListTitleRoot.setAttribute(
         'class',
-        'MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 MuiGrid-grid-lg-6',
+        'MuiGridListTile-tile-root makeStyles-videoContainer-2',
       );
+      gridListTitleRoot.setAttribute('style', 'width: 50%; padding: 1px;');
+      const gridListTitleVideo = document.createElement('div');
+      gridListTitleVideo.setAttribute('class', 'MuiGridListTile-tile');
+      gridListTitleRoot.append(gridListTitleVideo);
+      // video
       const newVideo = document.createElement('video');
       newVideo.setAttribute('id', 'js-local-stream');
-      grid.append(newVideo);
       newVideo.srcObject = stream;
       newVideo.playsInline = true;
       newVideo.setAttribute('width', '100%');
       newVideo.setAttribute('height', '100%');
-      jsRemoteStream.append(grid);
-      console.log('test');
+      gridListTitleVideo.append(newVideo);
+
+      // gridListTitleBar
+      const gridListTitleBar = document.createElement('div');
+      gridListTitleBar.setAttribute(
+        'class',
+        'MuiGridListTileBar-root MuiGridListTileBar-titlePositionBottom',
+      );
+      gridListTitleVideo.append(gridListTitleBar);
+      const gridListTitleWrap = document.createElement('div');
+      gridListTitleWrap.setAttribute('class', 'MuiGridListTileBar-titleWrap');
+      gridListTitleBar.append(gridListTitleWrap);
+      const gridListTitle = document.createElement('div');
+      gridListTitle.setAttribute('class', 'MuiGridListTileBar-title');
+      // TODO ここでユーザーの表示名を入れる
+      const userName = document.createTextNode('TaKa');
+      gridListTitle.append(userName);
+      gridListTitleWrap.append(gridListTitle);
+
+      jsRemoteStream.append(gridListTitleRoot);
       await newVideo.play().catch(console.error);
     });
 
@@ -115,10 +144,10 @@ const Room = (props) => {
     room.on('peerLeave', (peerId) => {
       const remoteVideoContainer = jsRemoteStream.querySelector(`#${peerId}`);
 
-      remoteVideoContainer.children[0].srcObject
+      remoteVideoContainer.children[0].children[0].srcObject
         .getTracks()
         .forEach((track) => track.stop());
-      remoteVideoContainer.children[0].srcObject = null;
+      remoteVideoContainer.children[0].children[0].srcObject = null;
       remoteVideoContainer.remove();
 
       setRoomMessages(roomMessages + `=== ${peerId} left ===\n`);
@@ -128,12 +157,12 @@ const Room = (props) => {
     room.once('close', () => {
       setRoomMessages(roomMessages + '== You left ===\n');
       jsRemoteStream
-        .querySelectorAll('div:not(#my-video)')
+        .querySelectorAll('li:not(#my-video)')
         .forEach((remoteVideoContainer) => {
-          remoteVideoContainer.children[0].srcObject
+          remoteVideoContainer.children[0].children[0].srcObject
             .getTracks()
             .forEach((track) => track.stop());
-          remoteVideoContainer.children[0].srcObject = null;
+          remoteVideoContainer.children[0].children[0].srcObject = null;
           remoteVideoContainer.remove();
         });
     });
@@ -159,14 +188,14 @@ const Room = (props) => {
   return (
     <Layout>
       <Container maxWidth="xl">
-        <h1 className="heading">ここにページ名</h1>
-        <Grid
-          container
-          className={classes.remoteStreams}
+        <GridList
+          cellHeight="90vh"
           id="js-remote-streams"
+          className={classes.remoteStreams}
+          cols={2}
           spacing={2}
         >
-          <Grid id="my-video" item xs={12} md={6} lg={6}>
+          <GridListTile className={classes.videoContainer} id="my-video">
             <video
               id="js-local-stream"
               muted
@@ -175,8 +204,9 @@ const Room = (props) => {
               width="100%"
               height="100%"
             />
-          </Grid>
-        </Grid>
+            <GridListTileBar title={userName} onChange={handleUserNameChange} />
+          </GridListTile>
+        </GridList>
       </Container>
 
       {/*移行する*/}
