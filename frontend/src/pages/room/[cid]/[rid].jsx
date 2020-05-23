@@ -44,11 +44,12 @@ const Room = (props) => {
 
   if (process.browser) {
     Peer = require('skyway-js');
-    peer = new Peer({ key: SKYWAY_API_KEY });
     jsLocalStream = document.getElementById('js-local-stream');
     jsRemoteStream = document.getElementById('js-remote-streams');
     jsLeaveTrigger = document.getElementById('js-leave-trigger');
   }
+
+
 
   const localStreamRef = useRef(null);
 
@@ -162,8 +163,9 @@ const Room = (props) => {
       gridListTitleBar.append(gridListTitleWrap);
       const gridListTitle = document.createElement('div');
       gridListTitle.setAttribute('class', 'MuiGridListTileBar-title');
-      // TODO ここでユーザーの表示名を入れる
-      const userName = document.createTextNode('TaKa');
+
+      const user = await selectUser(stream.peerId);
+      const userName = document.createTextNode(user.nickname);
       gridListTitle.append(userName);
       gridListTitleWrap.append(gridListTitle);
 
@@ -249,6 +251,8 @@ const Room = (props) => {
 
   useEffect(() => {
     (async () => {
+      const user = await getCurrentUser();
+      peer = new Peer(user.uid, { key: SKYWAY_API_KEY });
       await setUpUsernameInput();
       await setUpRoomInfo();
       await localStreamSetting();
