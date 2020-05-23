@@ -6,7 +6,8 @@ import {
   updateRoomDocumentWhenJoined,
   _insertCategoryDocument,
   selectCategory,
-  updateUsername, selectRoomDocument,
+  updateUsername,
+  selectRoomDocument,
 } from './index';
 
 const developers = [
@@ -143,7 +144,7 @@ describe('ニックネームのアップデートメソッド', () => {
  */
 describe('ルームの取得メソッド', () => {
   test('取得テスト', async () => {
-    const doc = await selectRoomDocument(0,'A2DfDAIFhDrw8Fi8WHFY');
+    const doc = await selectRoomDocument(0, 'A2DfDAIFhDrw8Fi8WHFY');
     const docdata = await doc.get();
     console.log(docdata.data());
   });

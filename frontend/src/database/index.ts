@@ -1,5 +1,10 @@
 import firebase from '../plugins/firebase';
-import {CategoryDocument, RoomDocument, UserDocument} from './model';
+import {
+  CategoryDocument,
+  RoomCardProp,
+  RoomDocument,
+  UserDocument,
+} from './model';
 
 export const selectCategories = async () => {
   const db = firebase.firestore();
@@ -17,8 +22,12 @@ export const selectRoomDocuments = async (cid: number) => {
 };
 export const selectRoomDocument = async (cid: number, docId: string) => {
   const db = firebase.firestore();
-  return db.collection('categories').doc(`${cid}`).collection('rooms').doc(docId);
-}
+  return db
+    .collection('categories')
+    .doc(`${cid}`)
+    .collection('rooms')
+    .doc(docId);
+};
 
 export const selectUserDocument = async (id: string) => {
   const db = firebase.firestore();
@@ -105,3 +114,16 @@ export const updateUsername = async (uid: string, nickname: string) => {
   });
 };
 
+export const getRoomCardProps = async (cid: number) => {
+  const rooms = await (await selectRoomDocuments(cid)).get();
+  const roomCardProps: RoomCardProp[] = [];
+  rooms.forEach((doc) => {
+    const rcp: RoomCardProp = {
+      ...(doc.data() as RoomDocument),
+      cid: cid,
+      rid: doc.id,
+    };
+    roomCardProps.push(rcp);
+  });
+  return roomCardProps;
+};

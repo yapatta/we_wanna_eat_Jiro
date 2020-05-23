@@ -1,7 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { SKYWAY_API_KEY } from '../env';
-import Layout from '../components/layout';
-import { makeStyles, Button, Grid, Container } from '@material-ui/core';
+import { useRouter } from 'next/router';
+import { SKYWAY_API_KEY } from '../../../env';
+import Layout from '../../../components/layout';
+import {
+  TextField,
+  makeStyles,
+  Button,
+  Grid,
+  Container,
+} from '@material-ui/core';
+import { selectRoomDocument } from '../../../database';
 
 const useStyles = makeStyles({
   myVideo: {},
@@ -50,9 +58,15 @@ const Room = (props) => {
     }
   };
 
-  const [roomId, setRoomId] = useState('');
+  const [userName, setUserName] = useState('');
   const [roomMessages, setRoomMessages] = useState('');
   const [isJoined, setIsJoined] = useState(false);
+  const router = useRouter();
+  const roomId = router.query.rid;
+
+  const handleUserNameChange = (event) => {
+    setUserName(event.target.value);
+  };
 
   const joinTroggerClick = async () => {
     if (!peer.open) {
@@ -88,6 +102,7 @@ const Room = (props) => {
       newVideo.setAttribute('width', '100%');
       newVideo.setAttribute('height', '100%');
       jsRemoteStream.append(grid);
+      console.log('test');
       await newVideo.play().catch(console.error);
     });
 
@@ -144,7 +159,7 @@ const Room = (props) => {
   return (
     <Layout>
       <Container maxWidth="xl">
-        <h1 className="heading">Room example</h1>
+        <h1 className="heading">ちんこ</h1>
         <Grid
           container
           className={classes.remoteStreams}
@@ -167,11 +182,12 @@ const Room = (props) => {
       {/*移行する*/}
       <Grid container>
         <Grid item xs={12} md={6} lg={6}>
-          <input
-            type="text"
-            placeholder="Room Name"
-            id="js-room-id"
-            onChange={(e) => setRoomId(e.target.value)}
+          <TextField
+            id="userName"
+            label="名前"
+            value={userName}
+            onChange={handleUserNameChange}
+            variant="outlined"
           />
           <Button
             id="js-leave-trigger"
