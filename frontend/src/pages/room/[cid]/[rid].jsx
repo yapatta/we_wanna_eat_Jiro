@@ -24,6 +24,7 @@ import {
   setPeerId
 } from '../../../database';
 import {getCurrentUser} from "../../../firebase/Authentication";
+import {randomString} from "../../../utils";
 
 const useStyles = makeStyles({
   remoteStreams: {
@@ -164,8 +165,22 @@ const Room = (props) => {
       gridListTitleBar.append(gridListTitleWrap);
       const gridListTitle = document.createElement('div');
       gridListTitle.setAttribute('class', 'MuiGridListTileBar-title');
-      // TODO ここでユーザーの表示名を入れる
-      const userName = document.createTextNode('TaKa');
+
+      // PeerIdからユーザ名を探す処理
+      const urls = location.pathname.split('/');
+      const roomDoc = await selectRoomDocument(Number(urls[urls.length - 2]),urls[urls.length - 1]);
+      const rd = await roomDoc.get();
+      const rooms = rd.data().rooms;
+
+      let username = document.createTextNode('Unknown');
+
+      // PeerIdの探索
+      rooms.forEach((user) => {
+        if (user.peerId === stream.peerId) {
+          username = document.createTextNode(user.name);
+        }
+      })
+
       gridListTitle.append(userName);
       gridListTitleWrap.append(gridListTitle);
 
@@ -223,6 +238,9 @@ const Room = (props) => {
     const userDocument = await selectUser(user.uid);
     const urls = location.pathname.split('/');
     await updateRoomDocumentWhenLeaved(Number(urls[urls.length - 2]),urls[urls.length - 1],userDocument);
+
+    // peerIdを適当なものにする。
+    await setPeerId(user.uid,`mock-${randomString()}`);
   }
 
   /**

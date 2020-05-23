@@ -20,6 +20,7 @@ export const selectRoomDocuments = async (cid: number) => {
   const db = firebase.firestore();
   return db.collection('categories').doc(`${cid}`).collection('rooms');
 };
+
 export const selectRoomDocument = async (cid: number, docId: string) => {
   const db = firebase.firestore();
   return db
