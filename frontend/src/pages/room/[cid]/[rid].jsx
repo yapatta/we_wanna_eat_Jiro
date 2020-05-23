@@ -12,7 +12,8 @@ import {
   GridList,
   TextField,
 } from '@material-ui/core';
-import { selectRoomDocument } from '../../../database';
+import {selectRoomDocument, selectUser, updateUsername} from '../../../database';
+import {getCurrentUser} from "../../../firebase/Authentication";
 
 const useStyles = makeStyles({
   remoteStreams: {
@@ -67,12 +68,26 @@ const Room = (props) => {
   const [userName, setUserName] = useState('');
   const [roomMessages, setRoomMessages] = useState('');
   const [isJoined, setIsJoined] = useState(false);
+  const [roomName, setRoomName] = useState('');
+
   const router = useRouter();
   const roomId = router.query.rid;
 
   const handleUserNameChange = (event) => {
     setUserName(event.target.value);
   };
+
+  /**
+   * 入力欄に入っているユーザ名が現在の名前と変更があるかを調べる、変更がない場合は名前のアップデートを行う
+   */
+  const updateUsernameIfChanged = async () => {
+    const user = getCurrentUser();
+    const userDoc = await selectUser(user.uid);
+    if( userDoc.nickname !== userName) {
+      await updateUsername(user.uid,userName);
+      alert('名前のアップデートを行いました！');
+    }
+  }
 
   const joinTroggerClick = async () => {
     if (!peer.open) {
@@ -179,9 +194,31 @@ const Room = (props) => {
     );
   };
 
+
+  /**
+   * ユーザをプレースホルダーに入れる
+   **/
+  const setUpUsernameInput = async () => {
+    const user = getCurrentUser();
+    const userDocument = await selectUser(user.uid);
+    setUserName(userDocument.nickname);
+  }
+
+
+  const setUpRoomInfo = async () => {
+    const roomDoc = await selectRoomDocument(Number(router.query.cid),String(router.query.rid));
+    const rd = await roomDoc.get();
+    console.log(rd.data());
+    setRoomName(rd.data().name);
+  }
+
   useEffect(() => {
     (async () => {
       await localStreamSetting();
+      // 現在のユーザ名をプレースホルダーに入れる、
+      await setUpUsernameInput();
+      // 画面にルーム情報の表示
+      await setUpRoomInfo();
     })();
   }, []);
 
@@ -217,6 +254,7 @@ const Room = (props) => {
             label="名前"
             value={userName}
             onChange={handleUserNameChange}
+            placeholder={roomName}
             variant="outlined"
           />
           <Button
