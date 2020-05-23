@@ -5,6 +5,7 @@ import {
   TextField,
   Typography,
   Container,
+  Card,
 } from '@material-ui/core';
 import { getCurrentUser } from '../../../firebase/Authentication';
 import { selectUser, updateUsername } from '../../../database';
@@ -26,6 +27,9 @@ const useStyles = makeStyles((theme) => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+  },
+  panel: {
+    padding: '12px',
   },
 }));
 
@@ -86,44 +90,46 @@ const enterRoom = (props) => {
   return (
     <Layout>
       <Container component="main" maxWidth="xs">
-        <div className={classes.paper}>
-          <Typography component="h1" variant="h5">
-            ルームに入室
-          </Typography>
-          <div className={classes.form}>
-            <TextField
-              id="userName"
-              label="名前"
-              value={userName}
-              fullWidth
-              onChange={handleUserNameChange}
-              placeholder={userName}
-              variant="outlined"
-              className={classes.input}
-            />
-            <div className={classes.input}>
-              <video
-                id="js-local-stream"
-                muted
-                ref={localStreamRef}
-                playsinline
-                width="100%"
-                height="100%"
+        <Card className={classes.panel}>
+          <div className={classes.paper}>
+            <Typography component="h1" variant="h5">
+              ルームに入室
+            </Typography>
+            <div className={classes.form}>
+              <TextField
+                id="userName"
+                label="名前"
+                value={userName}
+                fullWidth
+                onChange={handleUserNameChange}
+                placeholder={userName}
+                variant="outlined"
+                className={classes.input}
               />
+              <div className={classes.input}>
+                <video
+                  id="js-local-stream"
+                  muted
+                  ref={localStreamRef}
+                  playsinline
+                  width="100%"
+                  height="100%"
+                />
+              </div>
+              <Button
+                variant="contained"
+                id="js-join-trigger"
+                type="submit"
+                color="primary"
+                fullWidth
+                onClick={roomJoinClick}
+                className={classes.submit}
+              >
+                Join
+              </Button>
             </div>
-            <Button
-              variant="contained"
-              id="js-join-trigger"
-              type="submit"
-              color="primary"
-              fullWidth
-              onClick={roomJoinClick}
-              className={classes.submit}
-            >
-              Join
-            </Button>
           </div>
-        </div>
+        </Card>
       </Container>
     </Layout>
   );
