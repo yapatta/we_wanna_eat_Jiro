@@ -309,6 +309,22 @@ const Room = (props) => {
           </div>
         </Card>
       </Container>
+
+      <Button
+        variant="contained"
+        id="js-join-trigger"
+        color="primary"
+        onClick={JoinTriggerClick}
+        style={{ display: isJoined ? 'none' : '' }}
+      >
+        Join
+      </Button>
+
+      <div>
+        <pre className="messages" id="js-messages">
+          {roomMessages}
+        </pre>
+      </div>
     </Layout>
   );
 };
