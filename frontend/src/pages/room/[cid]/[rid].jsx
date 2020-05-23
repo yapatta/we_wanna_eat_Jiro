@@ -7,12 +7,11 @@ import firebase from '../../../plugins/firebase';
 import {
   makeStyles,
   Button,
-  Grid,
   Container,
   GridListTile,
   GridListTileBar,
   GridList,
-  TextField,
+  Card,
 } from '@material-ui/core';
 import {
   selectRoomDocument,
@@ -24,10 +23,19 @@ import {
 import { getCurrentUser } from '../../../firebase/Authentication';
 
 const useStyles = makeStyles({
+  rootContainer: {
+    marginTop: '32px',
+  },
   remoteStreams: {
-    // height: '100vh',
-    // display: 'flex',
-    // flexWrap: 'wrap',
+    backgroundColor: 'white',
+    padding: '12px',
+  },
+  roomTitle: {
+    color: 'gray',
+  },
+  roomFooter: {
+    textAlign: 'right',
+    margin: '22px',
   },
   videoContainer: {
     backgroundColor: 'gray',
@@ -136,7 +144,7 @@ const Room = (props) => {
         'class',
         'MuiGridListTile-tile-root makeStyles-videoContainer-2',
       );
-      gridListTitleRoot.setAttribute('style', 'width: 50%; padding: 1px;');
+      gridListTitleRoot.setAttribute('style', 'width: 50%; padding: 1px; background-color:gray;');
       const gridListTitleVideo = document.createElement('div');
       gridListTitleVideo.setAttribute('class', 'MuiGridListTile-tile');
       gridListTitleRoot.append(gridListTitleVideo);
@@ -179,7 +187,7 @@ const Room = (props) => {
 
     // for closing room members
     room.on('peerLeave', (peerId) => {
-      const remoteVideoContainer = jsRemoteStream.querySelector(`#${peerId}`);
+      const remoteVideoContainer = document.getElementById(`${peerId}`);
 
       remoteVideoContainer.children[0].children[0].srcObject
         .getTracks()
@@ -194,7 +202,7 @@ const Room = (props) => {
     room.once('close', () => {
       setRoomMessages(roomMessages + '== You left ===\n');
       jsRemoteStream
-        .querySelectorAll('li:not(#my-video)')
+        .querySelectorAll('li:not(.my-video)')
         .forEach((remoteVideoContainer) => {
           remoteVideoContainer.children[0].children[0].srcObject
             .getTracks()
@@ -262,64 +270,61 @@ const Room = (props) => {
 
   return (
     <Layout>
-      <p> {roomName}</p>
-      <Container maxWidth="xl">
-        <GridList
-          cellHeight="90vh"
-          id="js-remote-streams"
-          className={classes.remoteStreams}
-          cols={2}
-          spacing={2}
-        >
-          <GridListTile className={classes.videoContainer} id="my-video">
-            <video
-              id="js-local-stream"
-              muted
-              ref={localStreamRef}
-              playsinline
-              width="100%"
-              height="100%"
-            />
-            <GridListTileBar title={userName} onChange={handleUserNameChange} />
-          </GridListTile>
-        </GridList>
+      <Container maxWidth="xl" className={classes.rootContainer}>
+        <Card>
+          <GridList
+            cellHeight="90vh"
+            id="js-remote-streams"
+            className={classes.remoteStreams}
+            cols={2}
+          >
+            <GridListTile cols={2} className="my-video">
+              <h1 className={classes.roomTitle}>{roomName}</h1>
+            </GridListTile>
+            <GridListTile className={classes.videoContainer + ' ' + 'my-video'}>
+              <video
+                id="js-local-stream"
+                muted
+                ref={localStreamRef}
+                playsinline
+                width="100%"
+                height="100%"
+              />
+              <GridListTileBar
+                title={userName}
+                onChange={handleUserNameChange}
+              />
+            </GridListTile>
+          </GridList>
+
+          <div className={classes.roomFooter}>
+            <Button
+              variant="contained"
+              id="js-leave-trigger"
+              onClick={LeaveTriggerClick}
+              color="primary"
+            >
+              退出する
+            </Button>
+          </div>
+        </Card>
       </Container>
 
-      {/*移行する*/}
-      <Grid container>
-        <Grid item xs={12} md={6} lg={6}>
-          <TextField
-            id="userName"
-            label="名前"
-            value={userName}
-            onChange={handleUserNameChange}
-            placeholder={roomName}
-            variant="outlined"
-          />
-          <Button
-            id="js-leave-trigger"
-            onClick={LeaveTriggerClick}
-            style={{ display: !isJoined ? 'none' : '' }}
-          >
-            Leave
-          </Button>
-          <Button
-            variant="contained"
-            id="js-join-trigger"
-            color="primary"
-            onClick={JoinTriggerClick}
-            style={{ display: isJoined ? 'none' : '' }}
-          >
-            Join
-          </Button>
+      <Button
+        variant="contained"
+        id="js-join-trigger"
+        color="primary"
+        onClick={JoinTriggerClick}
+        style={{ display: isJoined ? 'none' : '' }}
+      >
+        Join
+      </Button>
 
-          <div>
-            <pre className="messages" id="js-messages">
-              {roomMessages}
-            </pre>
-          </div>
-        </Grid>
-      </Grid>
+      <div>
+        <pre className="messages" id="js-messages">
+          {roomMessages}
+        </pre>
+      </div>
     </Layout>
   );
 };
