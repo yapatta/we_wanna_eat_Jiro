@@ -1,12 +1,13 @@
 import {
   selectCategories,
-  selectRoomDocument,
+  selectRoomDocuments,
   insertRoomDocument,
   updateRoomDocumentWhenLeaved,
   updateRoomDocumentWhenJoined,
   _insertCategoryDocument,
   selectCategory,
   updateUsername,
+  selectRoomDocument,
 } from './index';
 
 const developers = [
@@ -46,9 +47,9 @@ describe('selectCategories が動作すること。', () => {
   });
 });
 
-describe('RoomDocumentの取得メソッドselectRoomDocument が動作すること。', () => {
+describe('RoomDocumentの取得メソッドselectRoomDocuments が動作すること。', () => {
   test('取得テスト', async () => {
-    const rs = await (await selectRoomDocument(2)).get();
+    const rs = await (await selectRoomDocuments(2)).get();
     rs.forEach((el) => {
       console.log(el.id, '=>', el.data());
     });
@@ -135,5 +136,16 @@ describe('カテゴリ追加メソッド', () => {
 describe('ニックネームのアップデートメソッド', () => {
   test('アップデートテスト', async () => {
     await updateUsername('dGBaomqi1oddIrnj4wVuZtbaZWJ2', 'test hoge太郎');
+  });
+});
+
+/**
+ * ルームの単一取得を行う。
+ */
+describe('ルームの取得メソッド', () => {
+  test('取得テスト', async () => {
+    const doc = await selectRoomDocument(0, 'A2DfDAIFhDrw8Fi8WHFY');
+    const docdata = await doc.get();
+    console.log(docdata.data());
   });
 });
