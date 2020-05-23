@@ -128,3 +128,18 @@ export const getRoomCardProps = async (cid: number) => {
   });
   return roomCardProps;
 };
+
+/**
+ *
+ * @param cid
+ * @param roomId 別名 docIdとも言う。
+ */
+export const deleteRoomDocument = async (cid: number, roomId: string) => {
+  const db = firebase.firestore();
+  await db
+    .collection('categories')
+    .doc(`${cid}`)
+    .collection('rooms')
+    .doc(roomId)
+    .delete();
+};
