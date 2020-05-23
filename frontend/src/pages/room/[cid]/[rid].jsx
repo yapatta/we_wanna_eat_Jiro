@@ -202,7 +202,7 @@ const Room = (props) => {
     room.once('close', () => {
       setRoomMessages(roomMessages + '== You left ===\n');
       jsRemoteStream
-        .querySelectorAll('li:not(#my-video)')
+        .querySelectorAll('li:not(.my-video)')
         .forEach((remoteVideoContainer) => {
           remoteVideoContainer.children[0].children[0].srcObject
             .getTracks()
@@ -278,10 +278,13 @@ const Room = (props) => {
             className={classes.remoteStreams}
             cols={2}
           >
-            <GridListTile cols={2}>
+            <GridListTile
+              cols={2}
+              className='my-video'
+            >
               <h1 className={classes.roomTitle}>{roomName}</h1>
             </GridListTile>
-            <GridListTile className={classes.videoContainer} id="my-video">
+            <GridListTile className={classes.videoContainer + ' ' + 'my-video'}>
               <video
                 id="js-local-stream"
                 muted
