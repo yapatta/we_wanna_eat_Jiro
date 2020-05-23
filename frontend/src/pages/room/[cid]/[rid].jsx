@@ -19,7 +19,6 @@ import {
   selectUser,
   updateRoomDocumentWhenJoined,
   updateRoomDocumentWhenLeaved,
-  updateUsername,
 } from '../../../database';
 import { getCurrentUser } from '../../../firebase/Authentication';
 
@@ -98,12 +97,10 @@ const Room = (props) => {
   };
 
   const JoinTriggerClick = async () => {
+    console.log(peer.open);
     if (!peer.open) {
-      // FIXME: 通話相手がいない的な旨の処理を表示
       return;
     }
-
-    await updateUsernameIfChanged();
 
     // 入室処理
     const user = await getCurrentUser();
@@ -254,11 +251,15 @@ const Room = (props) => {
       setPeer(new Peer(user.uid, { key: SKYWAY_API_KEY }));
       await setUpUsernameInput();
       await setUpRoomInfo();
-      await localStreamSetting();
-      // 現在のユーザ名をプレースホルダーに入れる、
-      // 画面にルーム情報の表示
     })();
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      await localStreamSetting();
+      await JoinTriggerClick();
+    })();
+  }, [peer]);
 
   return (
     <Layout>
