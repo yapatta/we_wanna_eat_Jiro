@@ -31,23 +31,28 @@ const RoomCard = (props: CardProps) => {
               <h3>{props.children.name}</h3>
               <p>説明: {props.children.description}</p>
               <p>オーナー: {props.children.admin}</p>
+              <p>現在の人数: {props.children.userNum} / 4</p>
             </div>
           </Typography>
           <Typography>
-            <Link
-              href={{
-                pathname: `/room/${props.children.cid}/${props.children.rid}`,
-              }}
-              as={`/room/${props.children.cid}/${props.children.rid}`}
-            >
-              <Button
-                variant="contained"
-                color="primary"
-                className={classes.joinRoom}
+            {props.children.userNum === 4 ? (
+              <p>人数がいっぱいです、ごめんなさい！</p>
+            ) : (
+              <Link
+                href={{
+                  pathname: `/room/${props.children.cid}/${props.children.rid}`,
+                }}
+                as={`/room/${props.children.cid}/${props.children.rid}`}
               >
-                部屋に入る
-              </Button>
-            </Link>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.joinRoom}
+                >
+                  部屋に入る
+                </Button>
+              </Link>
+            )}
           </Typography>
         </CardContent>
       </Card>
