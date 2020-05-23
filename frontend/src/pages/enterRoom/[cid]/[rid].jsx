@@ -7,7 +7,7 @@ import {
   Container,
 } from '@material-ui/core';
 import { getCurrentUser } from '../../../firebase/Authentication';
-import { selectUser } from '../../../database';
+import { selectUser, updateUsername } from '../../../database';
 import Layout from '../../../components/layout';
 
 const useStyles = makeStyles((theme) => ({
