@@ -46,14 +46,6 @@ const Layout = (props: LayoutProps) => {
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="menu"
-          >
-            <MenuIcon />
-          </IconButton>
           <Typography variant="h4" className={classes.title}>
             <a href="/">
               <img src="/static/logo.svg" alt="logo" />
