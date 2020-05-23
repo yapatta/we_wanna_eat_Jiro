@@ -71,6 +71,7 @@ const Room = (props) => {
   const joinTroggerClick = async () => {
     if (!peer.open) {
       // FIXME: 通話相手がいない的な旨の処理を表示
+      
       return;
     }
 
