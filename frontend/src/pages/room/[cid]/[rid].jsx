@@ -71,16 +71,6 @@ const Room = (props) => {
   const [roomMessages, setRoomMessages] = useState('');
   const [isJoined, setIsJoined] = useState(false);
   const [roomName, setRoomName] = useState('');
-  const [currentUser, setCurrentUser] = useState(null);
-
-  firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
-      setCurrentUser(user);
-    } else {
-      setCurrentUser(null);
-    }
-  });
-
 
   const router = useRouter();
   const roomId = router.query.rid;
@@ -94,8 +84,8 @@ const Room = (props) => {
    */
   const updateUsernameIfChanged = async () => {
     const user = await getCurrentUser();
-    const userDoc = await selectUser(user.uid);
-    if( userDoc.nickname !== userName) {
+    const userDocument = await selectUser(user.uid);
+    if( userDocument.nickname !== userName) {
       await updateUsername(user.uid,userName);
       alert('名前のアップデートを行いました！');
     }
@@ -212,28 +202,28 @@ const Room = (props) => {
    * ユーザをプレースホルダーに入れる
    **/
   const setUpUsernameInput = async () => {
-    console.log('start reading')
-    console.log(`user in set up: ${JSON.stringify(currentUser)}`)
-    const userDocument = await selectUser(currentUser.uid);
+    const user = await getCurrentUser();
+    const userDocument = await selectUser(user.uid);
     setUserName(userDocument.nickname);
   }
 
 
   const setUpRoomInfo = async () => {
+    console.log(`nyaa: ${String(router.query.rid)}`);
+    console.log(`nyaa2: ${String(router.query.cid)}`);
     const roomDoc = await selectRoomDocument(Number(router.query.cid),String(router.query.rid));
     const rd = await roomDoc.get();
-    console.log(rd.data());
-    setRoomName(rd.data().name);
+    console.log(`kasuL ${JSON.stringify(rd.data())}`);
+    setRoomName(rd.data().uid);
   }
 
   useEffect(() => {
     (async () => {
-      await localStreamSetting();
-      console.log('start reading')
-      // 現在のユーザ名をプレースホルダーに入れる、
       await setUpUsernameInput();
-      // 画面にルーム情報の表示
       await setUpRoomInfo();
+      await localStreamSetting();
+      // 現在のユーザ名をプレースホルダーに入れる、
+      // 画面にルーム情報の表示
     })();
   }, []);
 
