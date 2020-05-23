@@ -3,7 +3,7 @@ import fetch from 'isomorphic-unfetch';
 import { API_PATH } from '../env';
 import Layout from '../components/layout';
 import CategoryCard from '../components/categoryCard';
-import { Grid } from '@material-ui/core';
+import {Card, CardMedia, Grid} from '@material-ui/core';
 import { selectCategories } from '../database';
 import { CategoryDocument } from '../database/model';
 import { Container } from '@material-ui/core';
@@ -15,6 +15,16 @@ interface AppProps {
 const Index = (props: AppProps) => {
   return (
     <Layout>
+      <Card>
+        {/* MEMO 画像とテキストを組み合わせてえ〜感じに表示したい*/}
+        <CardMedia
+          component="img"
+          alt="Contemplative Reptile"
+          width="100%"
+          image="/static/top_image.svg"
+          title="Contemplative Reptile"
+        />
+      </Card>
       <Container maxWidth="lg">
         <Grid container>
           {props.categories.map((category: CategoryDocument, index: number) => {
