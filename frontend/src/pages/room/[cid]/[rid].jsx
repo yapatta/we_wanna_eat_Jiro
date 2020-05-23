@@ -79,33 +79,17 @@ const Room = (props) => {
   };
 
   const [userName, setUserName] = useState('');
-  const [roomMessages, setRoomMessages] = useState('');
-  const [isJoined, setIsJoined] = useState(false);
   const [roomName, setRoomName] = useState('');
   const [peer, setPeer] = useState(null);
 
   const router = useRouter();
   const roomId = router.query.rid;
-  const cid = router.query.cid;
 
   const handleUserNameChange = (event) => {
     setUserName(event.target.value);
   };
 
-  /**
-   * 入力欄に入っているユーザ名が現在の名前と変更があるかを調べる、変更がない場合は名前のアップデートを行う
-   */
-  const updateUsernameIfChanged = async () => {
-    const user = await getCurrentUser();
-    const userDocument = await selectUser(user.uid);
-    if (userDocument.nickname !== userName) {
-      await updateUsername(user.uid, userName);
-      alert('名前のアップデートを行いました！');
-    }
-  };
-
   const JoinTriggerClick = async () => {
-    console.log(peer.open);
     if (!peer.open) {
       return;
     }
@@ -126,11 +110,10 @@ const Room = (props) => {
     });
 
     room.once('open', () => {
-      setRoomMessages(roomMessages + '=== You joined ===\n');
-      setIsJoined(true);
+      console.log('=== You joined ===\n');
     });
     room.on('peerJoin', (peerId) => {
-      setRoomMessages(roomMessages + `=== ${peerId} joined ===\n`);
+      console.log(`=== ${peerId} joined ===\n`);
     });
 
     room.on('stream', async (stream) => {
@@ -141,7 +124,10 @@ const Room = (props) => {
         'class',
         'MuiGridListTile-tile-root makeStyles-videoContainer-2',
       );
-      gridListTitleRoot.setAttribute('style', 'width: 50%; padding: 1px; background-color:gray;');
+      gridListTitleRoot.setAttribute(
+        'style',
+        'width: 50%; padding: 1px; background-color:gray;',
+      );
       const gridListTitleVideo = document.createElement('div');
       gridListTitleVideo.setAttribute('class', 'MuiGridListTile-tile');
       gridListTitleRoot.append(gridListTitleVideo);
@@ -179,7 +165,7 @@ const Room = (props) => {
 
     room.on('data', ({ data, src }) => {
       // Show a message sent to the room and who sent
-      setRoomMessages(roomMessages + `${src}: ${data}\n`);
+      console.log(`${src}: ${data}\n`);
     });
 
     // for closing room members
@@ -192,12 +178,12 @@ const Room = (props) => {
       remoteVideoContainer.children[0].children[0].srcObject = null;
       remoteVideoContainer.remove();
 
-      setRoomMessages(roomMessages + `=== ${peerId} left ===\n`);
+      console.log(`=== ${peerId} left ===\n`);
     });
 
     // for closing myself
     room.once('close', () => {
-      setRoomMessages(roomMessages + '== You left ===\n');
+      console.log('== You left ===\n');
       jsRemoteStream
         .querySelectorAll('li:not(.my-video)')
         .forEach((remoteVideoContainer) => {
@@ -212,13 +198,24 @@ const Room = (props) => {
     jsLeaveTrigger.addEventListener(
       'click',
       () => {
-        setIsJoined(false);
         room.close();
       },
       {
         once: true,
       },
     );
+
+    /*
+    if (process.browser) {
+      window.addEventListener('beforeunload', (event) => {
+        // Cancel the event as stated by the standard.
+        event.preventDefault();
+        // Chrome requires returnValue to be set.
+        event.returnValue =
+          'このページを離れる場合は退出ボタンを押して離れてください';
+      });
+    }
+    */
   };
 
   const LeaveTriggerClick = async () => {
@@ -231,6 +228,13 @@ const Room = (props) => {
       urls[urls.length - 1],
       userDocument,
     );
+
+    await localStreamOff();
+
+    if (process.browser) {
+      const urls = location.pathname.split('/');
+      window.location.href = `../../categories/${urls[urls.length - 2]}`;
+    }
   };
 
   /**
@@ -256,16 +260,18 @@ const Room = (props) => {
   useEffect(() => {
     (async () => {
       const user = await getCurrentUser();
-      setPeer(new Peer(user.uid, { key: SKYWAY_API_KEY }));
       await setUpUsernameInput();
       await setUpRoomInfo();
+      setPeer(new Peer(user.uid, { key: SKYWAY_API_KEY }));
     })();
   }, []);
 
   useEffect(() => {
     (async () => {
-      await localStreamSetting();
-      await JoinTriggerClick();
+      if (peer) {
+        await localStreamSetting();
+        await JoinTriggerClick();
+      }
     })();
   }, [peer]);
 
@@ -310,22 +316,6 @@ const Room = (props) => {
           </div>
         </Card>
       </Container>
-
-      <Button
-        variant="contained"
-        id="js-join-trigger"
-        color="primary"
-        onClick={JoinTriggerClick}
-        style={{ display: isJoined ? 'none' : '' }}
-      >
-        Join
-      </Button>
-
-      <div>
-        <pre className="messages" id="js-messages">
-          {roomMessages}
-        </pre>
-      </div>
     </Layout>
   );
 };
