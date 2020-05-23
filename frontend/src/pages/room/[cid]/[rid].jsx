@@ -74,6 +74,7 @@ const Room = (props) => {
 
   const router = useRouter();
   const roomId = router.query.rid;
+  const cid = router.query.cid;
 
   const handleUserNameChange = (event) => {
     setUserName(event.target.value);
@@ -209,12 +210,11 @@ const Room = (props) => {
 
 
   const setUpRoomInfo = async () => {
-    console.log(`nyaa: ${String(router.query.rid)}`);
-    console.log(`nyaa2: ${String(router.query.cid)}`);
-    const roomDoc = await selectRoomDocument(Number(router.query.cid),String(router.query.rid));
+    const urls = location.pathname.split('/');
+    const roomDoc = await selectRoomDocument(Number(urls[urls.length - 2]),urls[urls.length - 1]);
     const rd = await roomDoc.get();
-    console.log(`kasuL ${JSON.stringify(rd.data())}`);
-    setRoomName(rd.data().uid);
+    console.log(rd.data().name);
+    setRoomName(rd.data().name);
   }
 
   useEffect(() => {
