@@ -105,7 +105,6 @@ const Room = (props) => {
   };
 
   const JoinTriggerClick = async () => {
-    console.log(peer.open);
     if (!peer.open) {
       return;
     }
@@ -141,7 +140,10 @@ const Room = (props) => {
         'class',
         'MuiGridListTile-tile-root makeStyles-videoContainer-2',
       );
-      gridListTitleRoot.setAttribute('style', 'width: 50%; padding: 1px; background-color:gray;');
+      gridListTitleRoot.setAttribute(
+        'style',
+        'width: 50%; padding: 1px; background-color:gray;',
+      );
       const gridListTitleVideo = document.createElement('div');
       gridListTitleVideo.setAttribute('class', 'MuiGridListTile-tile');
       gridListTitleRoot.append(gridListTitleVideo);
@@ -256,16 +258,18 @@ const Room = (props) => {
   useEffect(() => {
     (async () => {
       const user = await getCurrentUser();
-      setPeer(new Peer(user.uid, { key: SKYWAY_API_KEY }));
       await setUpUsernameInput();
       await setUpRoomInfo();
+      setPeer(new Peer(user.uid, { key: SKYWAY_API_KEY }));
     })();
   }, []);
 
   useEffect(() => {
     (async () => {
-      await localStreamSetting();
-      await JoinTriggerClick();
+      if (!peer) {
+        await localStreamSetting();
+        await JoinTriggerClick();
+      }
     })();
   }, [peer]);
 
