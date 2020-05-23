@@ -170,12 +170,12 @@ const Room = (props) => {
       const urls = location.pathname.split('/');
       const roomDoc = await selectRoomDocument(Number(urls[urls.length - 2]),urls[urls.length - 1]);
       const rd = await roomDoc.get();
-      const rooms = rd.data().rooms;
+      const users = rd.data().users;
 
       let username = document.createTextNode('Unknown');
 
       // PeerIdの探索
-      rooms.forEach((user) => {
+      users.forEach((user) => {
         if (user.peerId === stream.peerId) {
           username = document.createTextNode(user.name);
         }
