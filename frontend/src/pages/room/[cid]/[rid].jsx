@@ -10,6 +10,7 @@ import {
   GridListTile,
   GridListTileBar,
   GridList,
+  TextField,
 } from '@material-ui/core';
 import { selectRoomDocument } from '../../../database';
 
@@ -203,10 +204,7 @@ const Room = (props) => {
               width="100%"
               height="100%"
             />
-            <GridListTileBar
-              title={userName}
-              onChange={handleUserNameChange}
-            />
+            <GridListTileBar title={userName} onChange={handleUserNameChange} />
           </GridListTile>
         </GridList>
       </Container>
@@ -214,11 +212,12 @@ const Room = (props) => {
       {/*移行する*/}
       <Grid container>
         <Grid item xs={12} md={6} lg={6}>
-          <input
-            type="text"
-            placeholder="Room Name"
-            id="js-room-id"
-            onChange={(e) => setRoomId(e.target.value)}
+          <TextField
+            id="userName"
+            label="名前"
+            value={userName}
+            onChange={handleUserNameChange}
+            variant="outlined"
           />
           <Button
             id="js-leave-trigger"
