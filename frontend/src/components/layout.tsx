@@ -51,11 +51,11 @@ const Layout = (props: LayoutProps) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" className={classes.title} color="inherit">
-            <a href="/" className={classes.titleLink}>
-              オンライン飲み会！！
-            </a>
-          </Typography>
+          <a href="/">
+            <IconButton>
+              <img src="/static/logo.svg" alt="logo"/>
+            </IconButton>
+          </a>
           {currentUser ? (
             <span>
               <Button color="inherit">
