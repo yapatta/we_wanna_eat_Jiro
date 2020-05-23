@@ -187,7 +187,7 @@ const Room = (props) => {
 
     // for closing room members
     room.on('peerLeave', (peerId) => {
-      const remoteVideoContainer = jsRemoteStream.querySelector(`#${peerId}`);
+      const remoteVideoContainer = document.getElementById(`${peerId}`);
 
       remoteVideoContainer.children[0].children[0].srcObject
         .getTracks()
