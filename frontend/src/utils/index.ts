@@ -7,4 +7,5 @@ export const randomString = (length: number= 12) => {
     for(let i=0; i<length; i++){
         r += c[Math.floor(Math.random()*cl)];
     }
+    return r
 }
