@@ -14,7 +14,13 @@ import {
   GridList,
   TextField,
 } from '@material-ui/core';
-import {selectRoomDocument, selectUser, updateUsername} from '../../../database';
+import {
+  selectRoomDocument,
+  selectUser,
+  updateRoomDocumentWhenJoined,
+  updateRoomDocumentWhenLeaved,
+  updateUsername
+} from '../../../database';
 import {getCurrentUser} from "../../../firebase/Authentication";
 
 const useStyles = makeStyles({
@@ -92,13 +98,21 @@ const Room = (props) => {
     }
   }
 
-  const joinTroggerClick = async () => {
+  const JoinTriggerClick = async () => {
     if (!peer.open) {
       // FIXME: 通話相手がいない的な旨の処理を表示
       return;
     }
 
+
     await updateUsernameIfChanged();
+
+    // 入室処理
+    const user = await getCurrentUser();
+    const userDocument = await selectUser(user.uid);
+    const urls = location.pathname.split('/');
+    await updateRoomDocumentWhenJoined(Number(urls[urls.length - 2]),urls[urls.length - 1],userDocument);
+
     const room = peer.joinRoom(roomId, {
       mode: 'mesh',
       stream: localStreamRef.current.srcObject,
@@ -198,6 +212,13 @@ const Room = (props) => {
     );
   };
 
+  const LeaveTriggerClick = async () => {
+    // 退出処理
+    const user = await getCurrentUser();
+    const userDocument = await selectUser(user.uid);
+    const urls = location.pathname.split('/');
+    await updateRoomDocumentWhenLeaved(Number(urls[urls.length - 2]),urls[urls.length - 1],userDocument);
+  }
 
   /**
    * ユーザをプレースホルダーに入れる
@@ -229,6 +250,7 @@ const Room = (props) => {
 
   return (
     <Layout>
+      <p> { roomName }</p>
       <Container maxWidth="xl">
         <GridList
           cellHeight="90vh"
@@ -264,6 +286,7 @@ const Room = (props) => {
           />
           <Button
             id="js-leave-trigger"
+            onClick={LeaveTriggerClick}
             style={{ display: !isJoined ? 'none' : '' }}
           >
             Leave
@@ -272,7 +295,7 @@ const Room = (props) => {
             variant="contained"
             id="js-join-trigger"
             color="primary"
-            onClick={joinTroggerClick}
+            onClick={JoinTriggerClick}
             style={{ display: isJoined ? 'none' : '' }}
           >
             Join
