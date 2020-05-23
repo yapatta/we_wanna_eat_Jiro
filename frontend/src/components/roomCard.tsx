@@ -40,9 +40,9 @@ const RoomCard = (props: CardProps) => {
             ) : (
               <Link
                 href={{
-                  pathname: `/room/${props.children.cid}/${props.children.rid}`,
+                  pathname: `/enterRoom/${props.children.cid}/${props.children.rid}`,
                 }}
-                as={`/room/${props.children.cid}/${props.children.rid}`}
+                as={`/enterRoom/${props.children.cid}/${props.children.rid}`}
               >
                 <Button
                   variant="contained"
