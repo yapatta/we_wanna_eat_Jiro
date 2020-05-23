@@ -6,7 +6,7 @@ import {
   TextField,
   makeStyles,
   Button,
-  Grid,
+  Grid
   Container,
 } from '@material-ui/core';
 import { selectRoomDocument } from '../../../database';
@@ -159,7 +159,7 @@ const Room = (props) => {
   return (
     <Layout>
       <Container maxWidth="xl">
-        <h1 className="heading">ちんこ</h1>
+        <h1 className="heading">ここにページ名</h1>
         <Grid
           container
           className={classes.remoteStreams}
