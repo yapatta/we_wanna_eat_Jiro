@@ -144,7 +144,7 @@ const Room = (props) => {
         'class',
         'MuiGridListTile-tile-root makeStyles-videoContainer-2',
       );
-      gridListTitleRoot.setAttribute('style', 'width: 50%; padding: 1px;');
+      gridListTitleRoot.setAttribute('style', 'width: 50%; padding: 1px; background-color:gray;');
       const gridListTitleVideo = document.createElement('div');
       gridListTitleVideo.setAttribute('class', 'MuiGridListTile-tile');
       gridListTitleRoot.append(gridListTitleVideo);
