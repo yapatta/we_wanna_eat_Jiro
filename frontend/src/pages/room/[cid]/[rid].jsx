@@ -19,9 +19,9 @@ import {
   selectUser,
   updateRoomDocumentWhenJoined,
   updateRoomDocumentWhenLeaved,
-  updateUsername
+  updateUsername,
 } from '../../../database';
-import {getCurrentUser} from "../../../firebase/Authentication";
+import { getCurrentUser } from '../../../firebase/Authentication';
 
 const useStyles = makeStyles({
   remoteStreams: {
@@ -92,11 +92,11 @@ const Room = (props) => {
   const updateUsernameIfChanged = async () => {
     const user = await getCurrentUser();
     const userDocument = await selectUser(user.uid);
-    if( userDocument.nickname !== userName) {
-      await updateUsername(user.uid,userName);
+    if (userDocument.nickname !== userName) {
+      await updateUsername(user.uid, userName);
       alert('名前のアップデートを行いました！');
     }
-  }
+  };
 
   const JoinTriggerClick = async () => {
     if (!peer.open) {
@@ -104,14 +104,17 @@ const Room = (props) => {
       return;
     }
 
-
     await updateUsernameIfChanged();
 
     // 入室処理
     const user = await getCurrentUser();
     const userDocument = await selectUser(user.uid);
     const urls = location.pathname.split('/');
-    await updateRoomDocumentWhenJoined(Number(urls[urls.length - 2]),urls[urls.length - 1],userDocument);
+    await updateRoomDocumentWhenJoined(
+      Number(urls[urls.length - 2]),
+      urls[urls.length - 1],
+      userDocument,
+    );
 
     const room = peer.joinRoom(roomId, {
       mode: 'mesh',
@@ -217,8 +220,12 @@ const Room = (props) => {
     const user = await getCurrentUser();
     const userDocument = await selectUser(user.uid);
     const urls = location.pathname.split('/');
-    await updateRoomDocumentWhenLeaved(Number(urls[urls.length - 2]),urls[urls.length - 1],userDocument);
-  }
+    await updateRoomDocumentWhenLeaved(
+      Number(urls[urls.length - 2]),
+      urls[urls.length - 1],
+      userDocument,
+    );
+  };
 
   /**
    * ユーザをプレースホルダーに入れる
@@ -227,16 +234,18 @@ const Room = (props) => {
     const user = await getCurrentUser();
     const userDocument = await selectUser(user.uid);
     setUserName(userDocument.nickname);
-  }
-
+  };
 
   const setUpRoomInfo = async () => {
     const urls = location.pathname.split('/');
-    const roomDoc = await selectRoomDocument(Number(urls[urls.length - 2]),urls[urls.length - 1]);
+    const roomDoc = await selectRoomDocument(
+      Number(urls[urls.length - 2]),
+      urls[urls.length - 1],
+    );
     const rd = await roomDoc.get();
     console.log(rd.data().name);
     setRoomName(rd.data().name);
-  }
+  };
 
   useEffect(() => {
     (async () => {
@@ -250,7 +259,7 @@ const Room = (props) => {
 
   return (
     <Layout>
-      <p> { roomName }</p>
+      <p> {roomName}</p>
       <Container maxWidth="xl">
         <GridList
           cellHeight="90vh"
