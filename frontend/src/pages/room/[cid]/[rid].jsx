@@ -6,7 +6,7 @@ import {
   TextField,
   makeStyles,
   Button,
-  Grid
+  Grid,
   Container,
 } from '@material-ui/core';
 import { selectRoomDocument } from '../../../database';
@@ -71,7 +71,7 @@ const Room = (props) => {
   const joinTroggerClick = async () => {
     if (!peer.open) {
       // FIXME: 通話相手がいない的な旨の処理を表示
-      
+
       return;
     }
 
