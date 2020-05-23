@@ -40,6 +40,3 @@ service cloud.firestore {
   }
 }
 ```
-
-
-test
