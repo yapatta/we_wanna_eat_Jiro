@@ -37,7 +37,6 @@ const useStyles = makeStyles({
 const Room = (props) => {
   const classes = useStyles();
   let Peer;
-  let peer;
   let jsLocalStream;
   let jsRemoteStream;
   let jsLeaveTrigger;
@@ -78,6 +77,7 @@ const Room = (props) => {
   const [roomMessages, setRoomMessages] = useState('');
   const [isJoined, setIsJoined] = useState(false);
   const [roomName, setRoomName] = useState('');
+  const [peer,setPeer] = useState(null);
 
   const router = useRouter();
   const roomId = router.query.rid;
@@ -164,6 +164,7 @@ const Room = (props) => {
       const gridListTitle = document.createElement('div');
       gridListTitle.setAttribute('class', 'MuiGridListTileBar-title');
 
+      console.log(stream.peerId);
       const user = await selectUser(stream.peerId);
       const userName = document.createTextNode(user.nickname);
       gridListTitle.append(userName);
@@ -252,7 +253,7 @@ const Room = (props) => {
   useEffect(() => {
     (async () => {
       const user = await getCurrentUser();
-      peer = new Peer(user.uid, { key: SKYWAY_API_KEY });
+      setPeer(new Peer(user.uid, { key: SKYWAY_API_KEY }));
       await setUpUsernameInput();
       await setUpRoomInfo();
       await localStreamSetting();
