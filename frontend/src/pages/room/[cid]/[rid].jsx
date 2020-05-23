@@ -48,8 +48,6 @@ const Room = (props) => {
     jsLeaveTrigger = document.getElementById('js-leave-trigger');
   }
 
-
-
   const localStreamRef = useRef(null);
 
   const localStreamSetting = async () => {
@@ -77,7 +75,7 @@ const Room = (props) => {
   const [roomMessages, setRoomMessages] = useState('');
   const [isJoined, setIsJoined] = useState(false);
   const [roomName, setRoomName] = useState('');
-  const [peer,setPeer] = useState(null);
+  const [peer, setPeer] = useState(null);
 
   const router = useRouter();
   const roomId = router.query.rid;
