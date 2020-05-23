@@ -278,10 +278,7 @@ const Room = (props) => {
             className={classes.remoteStreams}
             cols={2}
           >
-            <GridListTile
-              cols={2}
-              className='my-video'
-            >
+            <GridListTile cols={2} className="my-video">
               <h1 className={classes.roomTitle}>{roomName}</h1>
             </GridListTile>
             <GridListTile className={classes.videoContainer + ' ' + 'my-video'}>
