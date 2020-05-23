@@ -119,10 +119,10 @@ const makeRoom = (props: makeRoomProps) => {
     };
 
     if (validateNewRoom(newRoom)) {
-      await insertRoomDocument(roomCategory, newRoom);
+      const doc = await insertRoomDocument(roomCategory, newRoom);
       // nicknameの更新
       await updateUsername(currentUser.uid, adminName);
-      setRoomUUID(currentUser.uid);
+      setRoomUUID(doc.id);
       setNewRoomFlag(true);
     }
   };
@@ -156,10 +156,9 @@ const makeRoom = (props: makeRoomProps) => {
             <Typography>
               <Link
                 href={{
-                  pathname: '/room',
-                  query: { index: `${roomUUID}` },
+                  pathname: `/enterRoom/${roomCategory}/${roomUUID}`,
                 }}
-                as={'/room'}
+                as={`/enterRoom/${roomCategory}/${roomUUID}`}
               >
                 <a>部屋に入る</a>
               </Link>
