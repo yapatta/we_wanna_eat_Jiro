@@ -2,17 +2,12 @@ import firebase from '../plugins/firebase';
 import { UserDocument } from '../database/model';
 import { insertUser, isCreatedUser } from '../database';
 
-export function getCurrentUser(): firebase.User {
-  const { currentUser } = firebase.auth();
-  if (!currentUser) {
-    throw Error('failed to get current user from firebase auth sdk');
-  }
-
-  return currentUser;
-}
-
-export function getUid(): string {
-  return getCurrentUser().uid;
+export function getCurrentUser(): Promise<firebase.User | boolean> {
+  return new Promise((resolve) => {
+    firebase.auth().onAuthStateChanged((user: firebase.User | null) => {
+      resolve(user || false);
+    });
+  });
 }
 
 export const handleGoogleLogin = async () => {

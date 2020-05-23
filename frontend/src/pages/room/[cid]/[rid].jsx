@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { SKYWAY_API_KEY } from '../../../env';
 import Layout from '../../../components/layout';
+import firebase from '../../../plugins/firebase';
+
 import {
   makeStyles,
   Button,
@@ -12,7 +14,8 @@ import {
   GridList,
   TextField,
 } from '@material-ui/core';
-import { selectRoomDocument } from '../../../database';
+import {selectRoomDocument, selectUser, updateUsername} from '../../../database';
+import {getCurrentUser} from "../../../firebase/Authentication";
 
 const useStyles = makeStyles({
   remoteStreams: {
@@ -67,12 +70,27 @@ const Room = (props) => {
   const [userName, setUserName] = useState('');
   const [roomMessages, setRoomMessages] = useState('');
   const [isJoined, setIsJoined] = useState(false);
+  const [roomName, setRoomName] = useState('');
+
   const router = useRouter();
   const roomId = router.query.rid;
+  const cid = router.query.cid;
 
   const handleUserNameChange = (event) => {
     setUserName(event.target.value);
   };
+
+  /**
+   * 入力欄に入っているユーザ名が現在の名前と変更があるかを調べる、変更がない場合は名前のアップデートを行う
+   */
+  const updateUsernameIfChanged = async () => {
+    const user = await getCurrentUser();
+    const userDocument = await selectUser(user.uid);
+    if( userDocument.nickname !== userName) {
+      await updateUsername(user.uid,userName);
+      alert('名前のアップデートを行いました！');
+    }
+  }
 
   const joinTroggerClick = async () => {
     if (!peer.open) {
@@ -80,6 +98,7 @@ const Room = (props) => {
       return;
     }
 
+    await updateUsernameIfChanged();
     const room = peer.joinRoom(roomId, {
       mode: 'mesh',
       stream: localStreamRef.current.srcObject,
@@ -179,9 +198,32 @@ const Room = (props) => {
     );
   };
 
+
+  /**
+   * ユーザをプレースホルダーに入れる
+   **/
+  const setUpUsernameInput = async () => {
+    const user = await getCurrentUser();
+    const userDocument = await selectUser(user.uid);
+    setUserName(userDocument.nickname);
+  }
+
+
+  const setUpRoomInfo = async () => {
+    const urls = location.pathname.split('/');
+    const roomDoc = await selectRoomDocument(Number(urls[urls.length - 2]),urls[urls.length - 1]);
+    const rd = await roomDoc.get();
+    console.log(rd.data().name);
+    setRoomName(rd.data().name);
+  }
+
   useEffect(() => {
     (async () => {
+      await setUpUsernameInput();
+      await setUpRoomInfo();
       await localStreamSetting();
+      // 現在のユーザ名をプレースホルダーに入れる、
+      // 画面にルーム情報の表示
     })();
   }, []);
 
@@ -217,6 +259,7 @@ const Room = (props) => {
             label="名前"
             value={userName}
             onChange={handleUserNameChange}
+            placeholder={roomName}
             variant="outlined"
           />
           <Button
