@@ -21,6 +21,9 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   titleLink: { color: 'white', textDecoration: 'none' },
+  marginContainer: {
+    marginTop: '10px',
+  },
 }));
 
 type LayoutProps = {
@@ -65,7 +68,7 @@ const Layout = (props: LayoutProps) => {
                   }}
                   as={'/makeRoom'}
                 >
-                  <span style={{ color: 'white' }}> 部屋を作る</span>
+                  <span style={{ color: 'black' }}> 部屋を作る</span>
                 </Link>
               </Button>
               <Button color="inherit" onClick={handleLogout}>
@@ -79,7 +82,7 @@ const Layout = (props: LayoutProps) => {
           )}
         </Toolbar>
       </AppBar>
-      {props.children}
+      <div className={classes.marginContainer}>{props.children}</div>
     </div>
   );
 };
