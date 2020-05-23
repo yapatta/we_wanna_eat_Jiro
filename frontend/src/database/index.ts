@@ -128,3 +128,10 @@ export const getRoomCardProps = async (cid: number) => {
   });
   return roomCardProps;
 };
+
+
+export const setPeerId = async (uid: string,peerId: string) => {
+  const db = firebase.firestore();
+  const docRef = db.collection('users').doc(uid);
+  await docRef.update({peerId: peerId});
+}

@@ -10,7 +10,7 @@ export interface UserDocument {
   uid: string;
   nickname: string;
   introduction: string;
-  evaluation: number;
+  peerId: string;
 }
 
 export interface CategoryDocument {

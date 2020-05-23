@@ -14,12 +14,14 @@ import {
   GridList,
   TextField,
 } from '@material-ui/core';
+
 import {
   selectRoomDocument,
   selectUser,
   updateRoomDocumentWhenJoined,
   updateRoomDocumentWhenLeaved,
-  updateUsername
+  updateUsername,
+  setPeerId
 } from '../../../database';
 import {getCurrentUser} from "../../../firebase/Authentication";
 
@@ -122,7 +124,10 @@ const Room = (props) => {
       setRoomMessages(roomMessages + '=== You joined ===\n');
       setIsJoined(true);
     });
-    room.on('peerJoin', (peerId) => {
+    room.on('peerJoin', async (peerId) => {
+      const user = await getCurrentUser();
+      const userDocument = await selectUser(user.uid);
+      await setPeerId(user.uid,peerId);
       setRoomMessages(roomMessages + `=== ${peerId} joined ===\n`);
     });
 

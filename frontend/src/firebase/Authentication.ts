@@ -1,6 +1,7 @@
 import firebase from '../plugins/firebase';
 import { UserDocument } from '../database/model';
 import { insertUser, isCreatedUser } from '../database';
+import {randomString} from "../utils";
 
 export function getCurrentUser(): Promise<firebase.User | boolean> {
   return new Promise((resolve) => {
@@ -21,7 +22,7 @@ export const handleGoogleLogin = async () => {
       uid: userObj.uid,
       nickname: userObj.displayName,
       introduction: '初めまして！よろしくお願いします！',
-      evaluation: 3,
+      peerId: `dummy-${randomString()}`
     };
     await insertUser(userDoc);
   }
