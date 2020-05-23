@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { SKYWAY_API_KEY } from '../env';
-import Layout from '../components/layout';
+import { useRouter } from 'next/router';
+import { SKYWAY_API_KEY } from '../../../env';
+import Layout from '../../../components/layout';
 import {
   makeStyles,
   Button,
@@ -10,6 +11,7 @@ import {
   GridListTileBar,
   GridList,
 } from '@material-ui/core';
+import { selectRoomDocument } from '../../../database';
 
 const useStyles = makeStyles({
   remoteStreams: {
@@ -61,9 +63,15 @@ const Room = (props) => {
     }
   };
 
-  const [roomId, setRoomId] = useState('');
+  const [userName, setUserName] = useState('');
   const [roomMessages, setRoomMessages] = useState('');
   const [isJoined, setIsJoined] = useState(false);
+  const router = useRouter();
+  const roomId = router.query.rid;
+
+  const handleUserNameChange = (event) => {
+    setUserName(event.target.value);
+  };
 
   const joinTroggerClick = async () => {
     if (!peer.open) {
@@ -196,8 +204,8 @@ const Room = (props) => {
               height="100%"
             />
             <GridListTileBar
-              // TODO ユーザーの表示名
-              title="やぱった"
+              title={userName}
+              onChange={handleUserNameChange}
             />
           </GridListTile>
         </GridList>
