@@ -122,6 +122,7 @@ export const getRoomCardProps = async (cid: number) => {
       ...(doc.data() as RoomDocument),
       cid: cid,
       rid: doc.id,
+      userNum: doc.data().users.length,
     };
     roomCardProps.push(rcp);
   });

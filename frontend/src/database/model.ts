@@ -22,4 +22,5 @@ export interface CategoryDocument {
 export interface RoomCardProp extends RoomDocument {
   cid: number;
   rid: string;
+  userNum: number;
 }
