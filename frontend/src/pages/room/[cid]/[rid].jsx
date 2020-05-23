@@ -81,7 +81,7 @@ const Room = (props) => {
    * 入力欄に入っているユーザ名が現在の名前と変更があるかを調べる、変更がない場合は名前のアップデートを行う
    */
   const updateUsernameIfChanged = async () => {
-    const user = getCurrentUser();
+    const user = await getCurrentUser();
     const userDoc = await selectUser(user.uid);
     if( userDoc.nickname !== userName) {
       await updateUsername(user.uid,userName);
