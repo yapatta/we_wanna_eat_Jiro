@@ -140,5 +140,5 @@ export const deleteRoomDelete = async (cid: number,roomId: string) => {
       .collection('categories')
       .doc(`${cid}`)
       .collection('rooms')
-      .doc(roomId);
+      .doc(roomId).delete();
 }
