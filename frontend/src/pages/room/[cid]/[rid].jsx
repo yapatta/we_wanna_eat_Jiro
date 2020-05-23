@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { SKYWAY_API_KEY } from '../../../env';
 import Layout from '../../../components/layout';
+import firebase from '../../../plugins/firebase';
+
 import {
   makeStyles,
   Button,
@@ -69,6 +71,16 @@ const Room = (props) => {
   const [roomMessages, setRoomMessages] = useState('');
   const [isJoined, setIsJoined] = useState(false);
   const [roomName, setRoomName] = useState('');
+  const [currentUser, setCurrentUser] = useState(null);
+
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      setCurrentUser(user);
+    } else {
+      setCurrentUser(null);
+    }
+  });
+
 
   const router = useRouter();
   const roomId = router.query.rid;
@@ -95,6 +107,7 @@ const Room = (props) => {
       return;
     }
 
+    await updateUsernameIfChanged();
     const room = peer.joinRoom(roomId, {
       mode: 'mesh',
       stream: localStreamRef.current.srcObject,
@@ -199,8 +212,9 @@ const Room = (props) => {
    * ユーザをプレースホルダーに入れる
    **/
   const setUpUsernameInput = async () => {
-    const user = getCurrentUser();
-    const userDocument = await selectUser(user.uid);
+    console.log('start reading')
+    console.log(`user in set up: ${JSON.stringify(currentUser)}`)
+    const userDocument = await selectUser(currentUser.uid);
     setUserName(userDocument.nickname);
   }
 
@@ -215,6 +229,7 @@ const Room = (props) => {
   useEffect(() => {
     (async () => {
       await localStreamSetting();
+      console.log('start reading')
       // 現在のユーザ名をプレースホルダーに入れる、
       await setUpUsernameInput();
       // 画面にルーム情報の表示
