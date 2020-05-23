@@ -4,10 +4,10 @@ import { Grid, makeStyles } from '@material-ui/core';
 
 import Link from 'next/link';
 import React from 'react';
-import { RoomDocument } from '../database/model';
+import { RoomCardProp } from '../database/model';
 
-type RoomCardProps = {
-  children: RoomDocument;
+type CardProps = {
+  children: RoomCardProp;
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -19,9 +19,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const RoomCard = (props: RoomCardProps) => {
-  // yuziroppe: 28行目, room IDってどうやってとりました？
-  // ${props.children.rid}の値
+const RoomCard = (props: CardProps) => {
   const classes = useStyles();
 
   return (
@@ -38,10 +36,9 @@ const RoomCard = (props: RoomCardProps) => {
           <Typography>
             <Link
               href={{
-                pathname: '/room',
-                query: { index: `2` },
+                pathname: `/room/${props.children.cid}/${props.children.rid}`,
               }}
-              as={'/room'}
+              as={`/room/${props.children.cid}/${props.children.rid}`}
             >
               <Button
                 variant="contained"

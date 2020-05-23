@@ -18,3 +18,8 @@ export interface CategoryDocument {
   name: string;
   description: string;
 }
+
+export interface RoomCardProp extends RoomDocument {
+  cid: number;
+  rid: string;
+}
