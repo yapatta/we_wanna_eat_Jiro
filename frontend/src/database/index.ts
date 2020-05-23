@@ -131,9 +131,14 @@ export const getRoomCardProps = async (cid: number) => {
 
 /**
  *
+ * @param cid
  * @param roomId 別名 docIdとも言う。
  */
-export const deleteRoomDelete = async (roomId: string) => {
+export const deleteRoomDelete = async (cid: number,roomId: string) => {
   const db = firebase.firestore();
-  await db.collection('users').doc(roomId).delete();
+  await db
+      .collection('categories')
+      .doc(`${cid}`)
+      .collection('rooms')
+      .doc(roomId);
 }
