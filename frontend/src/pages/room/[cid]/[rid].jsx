@@ -81,9 +81,24 @@ const Room = (props) => {
   const [userName, setUserName] = useState('');
   const [roomName, setRoomName] = useState('');
   const [peer, setPeer] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
   const router = useRouter();
   const roomId = router.query.rid;
+
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      setCurrentUser(user);
+    } else {
+      setCurrentUser(null);
+      const urls = location.pathname.split('/');
+      router.push(
+          `/enterRoom/${urls[urls.length - 2]}/${urls[urls.length - 1]}`,
+      );
+    }
+  });
+
+
 
   const handleUserNameChange = (event) => {
     setUserName(event.target.value);
@@ -259,12 +274,13 @@ const Room = (props) => {
 
   useEffect(() => {
     (async () => {
-      const user = await getCurrentUser();
-      await setUpUsernameInput();
-      await setUpRoomInfo();
-      setPeer(new Peer(user.uid, { key: SKYWAY_API_KEY }));
+      if(!!currentUser) {
+        await setUpUsernameInput();
+        await setUpRoomInfo();
+        setPeer(new Peer(currentUser.uid, { key: SKYWAY_API_KEY }));
+      }
     })();
-  }, []);
+  }, [currentUser]);
 
   useEffect(() => {
     (async () => {
