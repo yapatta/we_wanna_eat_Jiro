@@ -3,7 +3,7 @@ import fetch from 'isomorphic-unfetch';
 import { API_PATH } from '../env';
 import Layout from '../components/layout';
 import CategoryCard from '../components/categoryCard';
-import {Card, CardMedia, Grid} from '@material-ui/core';
+import {Card, CardMedia, Grid, makeStyles} from '@material-ui/core';
 import { selectCategories } from '../database';
 import { CategoryDocument } from '../database/model';
 import { Container } from '@material-ui/core';
@@ -12,7 +12,14 @@ interface AppProps {
   categories: CategoryDocument[];
 }
 
+const useStyles = makeStyles({
+  container: {
+    marginTop: '14px',
+  },
+});
+
 const Index = (props: AppProps) => {
+  const classes = useStyles();
   return (
     <Layout>
       <Card>
@@ -25,7 +32,7 @@ const Index = (props: AppProps) => {
           title="Contemplative Reptile"
         />
       </Card>
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" className={classes.container}>
         <Grid container>
           {props.categories.map((category: CategoryDocument, index: number) => {
             return <CategoryCard key={index}>{category}</CategoryCard>;

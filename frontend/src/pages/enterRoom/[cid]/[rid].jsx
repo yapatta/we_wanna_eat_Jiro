@@ -31,6 +31,9 @@ const useStyles = makeStyles((theme) => ({
   panel: {
     padding: '12px',
   },
+  container: {
+    marginTop: '14px',
+  },
 }));
 
 const enterRoom = (props) => {
@@ -57,7 +60,6 @@ const enterRoom = (props) => {
     const userDocument = await selectUser(user.uid);
     if (userDocument.nickname !== userName) {
       await updateUsername(user.uid, userName);
-      alert('名前のアップデートを行いました！');
     }
   };
 
@@ -89,7 +91,7 @@ const enterRoom = (props) => {
 
   return (
     <Layout>
-      <Container component="main" maxWidth="xs">
+      <Container component="main" maxWidth="xs" className={classes.container}>
         <Card className={classes.panel}>
           <div className={classes.paper}>
             <Typography component="h1" variant="h5">
@@ -125,7 +127,7 @@ const enterRoom = (props) => {
                 onClick={roomJoinClick}
                 className={classes.submit}
               >
-                Join
+                通話を開始する
               </Button>
             </div>
           </div>
