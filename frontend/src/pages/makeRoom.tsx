@@ -121,7 +121,7 @@ const makeRoom = (props: makeRoomProps) => {
       adminUid: currentUser.uid,
       admin: adminName,
       description: roomDescription,
-      users: [await selectUser(currentUser.uid)],
+      users: [],
     };
 
     if (validateNewRoom(newRoom)) {
