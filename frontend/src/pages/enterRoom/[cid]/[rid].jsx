@@ -60,7 +60,6 @@ const enterRoom = (props) => {
     const userDocument = await selectUser(user.uid);
     if (userDocument.nickname !== userName) {
       await updateUsername(user.uid, userName);
-      alert('名前のアップデートを行いました！');
     }
   };
 

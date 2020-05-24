@@ -23,11 +23,11 @@ import { getCurrentUser } from '../../../firebase/Authentication';
 
 const useStyles = makeStyles({
   rootContainer: {
-    marginTop: '32px',
+    marginTop: '12px',
   },
   remoteStreams: {
     backgroundColor: 'white',
-    padding: '12px',
+    padding: '14px',
   },
   roomTitle: {
     color: 'gray',
