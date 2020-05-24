@@ -103,6 +103,26 @@ const Room = (props) => {
     setUserName(event.target.value);
   };
 
+  const LeaveTriggerClick = async (flag) => {
+    // 退出処理
+    const user = await getCurrentUser();
+    const userDocument = await selectUser(user.uid);
+    const urls = location.pathname.split('/');
+    await updateRoomDocumentWhenLeaved(
+      Number(urls[urls.length - 2]),
+      urls[urls.length - 1],
+      userDocument,
+    );
+
+    await localStreamOff();
+
+    if (flag) {
+      router.push('/');
+    } else {
+      router.push(`/categories/${urls[urls.length - 2]}`);
+    }
+  };
+
   const JoinTriggerClick = async () => {
     if (!peer.open) {
       return;
@@ -209,46 +229,25 @@ const Room = (props) => {
         });
     });
 
+    window.addEventListener('beforeunload', (event) => {
+      // Cancel the event as stated by the standard.
+      event.preventDefault();
+      LeaveTriggerClick(true).then(() => {
+        return 0;
+      });
+    });
+
     jsLeaveTrigger.addEventListener(
       'click',
-      () => {
+      async (event) => {
+        event.preventDefault();
         room.close();
+        await LeaveTriggerClick(false);
       },
       {
         once: true,
       },
     );
-
-    /*
-    if (process.browser) {
-      window.addEventListener('beforeunload', (event) => {
-        // Cancel the event as stated by the standard.
-        event.preventDefault();
-        // Chrome requires returnValue to be set.
-        event.returnValue =
-          'このページを離れる場合は退出ボタンを押して離れてください';
-      });
-    }
-    */
-  };
-
-  const LeaveTriggerClick = async () => {
-    // 退出処理
-    const user = await getCurrentUser();
-    const userDocument = await selectUser(user.uid);
-    const urls = location.pathname.split('/');
-    await updateRoomDocumentWhenLeaved(
-      Number(urls[urls.length - 2]),
-      urls[urls.length - 1],
-      userDocument,
-    );
-
-    await localStreamOff();
-
-    if (process.browser) {
-      const urls = location.pathname.split('/');
-      window.location.href = `../../categories/${urls[urls.length - 2]}`;
-    }
   };
 
   /**
@@ -320,12 +319,7 @@ const Room = (props) => {
           </GridList>
 
           <div className={classes.roomFooter}>
-            <Button
-              variant="contained"
-              id="js-leave-trigger"
-              onClick={LeaveTriggerClick}
-              color="secondary"
-            >
+            <Button variant="contained" id="js-leave-trigger" color="secondary">
               退出する
             </Button>
           </div>
