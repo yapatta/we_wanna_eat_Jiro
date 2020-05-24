@@ -24,10 +24,10 @@ const getRandomInt = (max: number) => {
 const createTestRoomDocument = async () => {
   const v = getRandomInt(developers.length);
   return {
-    name: `ラーメン二郎 ${v}号店`,
-    admin: `developer[${v}]`,
+    name: `雑談`,
+    admin: 'やぱった',
     adminUid: developers[v],
-    description: 'ニンニクヤサイアブラな人募集中！',
+    description: '幅広く話しましょう！',
     users: [],
   };
 };
@@ -101,7 +101,6 @@ describe('人間の退出メソッド updateRoomDocumentWhenLeavedが動作す�
 
 describe('カテゴリ追加メソッド', () => {
   const nomikaiSubj = [
-    '失敗談',
     '趣味',
     '休日の過ごし方',
     '食べ物',
@@ -112,6 +111,8 @@ describe('カテゴリ追加メソッド', () => {
     'テレビ',
     'スポーツ',
     '昔話',
+    '失敗談',
+    '音楽',
   ];
   jest.setTimeout(1000000);
   test('カテゴリ追加', async () => {
