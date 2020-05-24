@@ -140,6 +140,15 @@ const makeRoom = (props: makeRoomProps) => {
     })();
   }, [roomUUID]);
 
+  useEffect(() => {
+    (async () => {
+      if (currentUser) {
+        const userDoc = await selectUser(currentUser.uid);
+        setAdminName(userDoc.nickname);
+      }
+    })();
+  }, [currentUser]);
+
   return (
     <Layout>
       <Container component="main" maxWidth="xs" className={classes.container}>
