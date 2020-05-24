@@ -10,6 +10,7 @@ import {
 import { getCurrentUser } from '../../../firebase/Authentication';
 import { selectUser, updateUsername } from '../../../database';
 import Layout from '../../../components/layout';
+import firebase from "../../../plugins/firebase";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -40,6 +41,16 @@ const enterRoom = (props) => {
   const classes = useStyles();
   const localStreamRef = useRef(null);
   const [userName, setUserName] = useState('');
+  const [isDisabledJoin, setIsDisabledJoin] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      setCurrentUser(user);
+    } else {
+      setCurrentUser(null);
+    }
+  });
 
   const localStreamSetting = async () => {
     localStreamRef.current.srcObject = await navigator.mediaDevices.getUserMedia(
@@ -56,10 +67,10 @@ const enterRoom = (props) => {
   };
 
   const updateUsernameIfChanged = async () => {
-    const user = await getCurrentUser();
-    const userDocument = await selectUser(user.uid);
+    const userDocument = await selectUser(currentUser.uid);
     if (userDocument.nickname !== userName) {
-      await updateUsername(user.uid, userName);
+      await updateUsername(currentUser.uid, userName);
+      alert('名前のアップデートを行いました！');
     }
   };
 
@@ -82,12 +93,19 @@ const enterRoom = (props) => {
 
   useEffect(() => {
     (async () => {
+      const user = await getCurrentUser();
+      if (!user) {
+        alert('先にログインお願い致します！');
+        setIsDisabledJoin(true);
+        return;
+      }
+      setIsDisabledJoin(false);
       await setUpUsernameInput();
       await localStreamSetting();
       // 現在のユーザ名をプレースホルダーに入れる、
       // 画面にルーム情報の表示
     })();
-  }, []);
+  }, [currentUser]);
 
   return (
     <Layout>
@@ -106,6 +124,7 @@ const enterRoom = (props) => {
                 onChange={handleUserNameChange}
                 placeholder={userName}
                 variant="outlined"
+                disabled={isDisabledJoin}
                 className={classes.input}
               />
               <div className={classes.input}>
@@ -126,6 +145,7 @@ const enterRoom = (props) => {
                 fullWidth
                 onClick={roomJoinClick}
                 className={classes.submit}
+                disabled={isDisabledJoin}
               >
                 通話を開始する
               </Button>
