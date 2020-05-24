@@ -127,7 +127,7 @@ const enterRoom = (props) => {
                 onClick={roomJoinClick}
                 className={classes.submit}
               >
-                Join
+                通話を開始する
               </Button>
             </div>
           </div>
