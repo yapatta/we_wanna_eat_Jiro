@@ -44,7 +44,6 @@ const useStyles = makeStyles({
 const Room = (props) => {
   const classes = useStyles();
   let Peer;
-  let room;
   let jsLocalStream;
   let jsRemoteStream;
   let jsLeaveTrigger;
@@ -87,30 +86,19 @@ const Room = (props) => {
   const router = useRouter();
   const roomId = router.query.rid;
 
-  const LeaveTriggerClick = async () => {
-    // 退出処理
-    // const user = await getCurrentUser();
-    const userDocument = await selectUser(currentUser.uid);
-    const urls = location.pathname.split('/');
-    await updateRoomDocumentWhenLeaved(
-      Number(urls[urls.length - 2]),
-      urls[urls.length - 1],
-      userDocument,
-    );
-
-    await localStreamOff();
-
-    router.push(`/categories/${urls[urls.length - 2]}`);
-  };
-
-  firebase.auth().onAuthStateChanged(async (user) => {
+  firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       setCurrentUser(user);
     } else {
-      // room.close();
-      await LeaveTriggerClick();
+      setCurrentUser(null);
+      const urls = location.pathname.split('/');
+      router.push(
+          `/enterRoom/${urls[urls.length - 2]}/${urls[urls.length - 1]}`,
+      );
     }
   });
+
+
 
   const handleUserNameChange = (event) => {
     setUserName(event.target.value);
@@ -131,7 +119,7 @@ const Room = (props) => {
       userDocument,
     );
 
-    room = peer.joinRoom(roomId, {
+    const room = peer.joinRoom(roomId, {
       mode: 'mesh',
       stream: localStreamRef.current.srcObject,
     });
@@ -245,6 +233,25 @@ const Room = (props) => {
     */
   };
 
+  const LeaveTriggerClick = async () => {
+    // 退出処理
+    const user = await getCurrentUser();
+    const userDocument = await selectUser(user.uid);
+    const urls = location.pathname.split('/');
+    await updateRoomDocumentWhenLeaved(
+      Number(urls[urls.length - 2]),
+      urls[urls.length - 1],
+      userDocument,
+    );
+
+    await localStreamOff();
+
+    if (process.browser) {
+      const urls = location.pathname.split('/');
+      window.location.href = `../../categories/${urls[urls.length - 2]}`;
+    }
+  };
+
   /**
    * ユーザをプレースホルダーに入れる
    **/
@@ -267,7 +274,7 @@ const Room = (props) => {
 
   useEffect(() => {
     (async () => {
-      if (!!currentUser) {
+      if(!!currentUser) {
         await setUpUsernameInput();
         await setUpRoomInfo();
         setPeer(new Peer(currentUser.uid, { key: SKYWAY_API_KEY }));
