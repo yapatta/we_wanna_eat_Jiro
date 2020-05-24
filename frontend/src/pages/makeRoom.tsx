@@ -66,7 +66,6 @@ const makeRoom = (props: makeRoomProps) => {
   const [roomName, setRoomName] = useState('');
   const [roomDescription, setRoomDescription] = useState('');
   const [roomCategory, setRoomCategory] = useState<number>(0);
-  const [newRoomFlag, setNewRoomFlag] = useState(false);
   const [roomUUID, setRoomUUID] = useState('');
 
   const [currentUser, setCurrentUser] = useState<firebase.User>();
@@ -130,124 +129,92 @@ const makeRoom = (props: makeRoomProps) => {
       // nicknameの更新
       await updateUsername(currentUser.uid, adminName);
       setRoomUUID(doc.id);
-      setNewRoomFlag(true);
     }
   };
 
   useEffect(() => {
     (async () => {
-      if (currentUser) {
-        const userDoc = await selectUser(currentUser.uid);
-        setAdminName(userDoc.nickname);
+      if (roomUUID !== '') {
+        window.location.href = `../../enterRoom/${roomCategory}/${roomUUID}`;
       }
     })();
-  }, [currentUser]);
+  }, [roomUUID]);
 
   return (
     <Layout>
       <Container component="main" maxWidth="xs" className={classes.container}>
         <Card className={classes.panel}>
-          {newRoomFlag ? (
-            <div className={classes.paper}>
-              <Typography component="h1" variant="h5">
-                ルームが作成されました！
-              </Typography>
-              <Typography component="h2" className={classes.result}>
-                {roomName}
-              </Typography>
-              <Typography component="h3" className={classes.result}>
-                管理者: {adminName}
-              </Typography>
-              <Typography component="h4" className={classes.result}>
-                説明: {roomDescription}
-              </Typography>
-              <Typography>
-                <Link
-                  href={{
-                    pathname: `/enterRoom/${roomCategory}/${roomUUID}`,
-                  }}
-                  as={`/enterRoom/${roomCategory}/${roomUUID}`}
-                >
-                  <a>部屋に入る</a>
-                </Link>
-                <Link href="/">
-                  <a>ホームに戻る</a>
-                </Link>
-              </Typography>
-            </div>
-          ) : (
-            <div className={classes.paper}>
-              <Typography component="h1" variant="h5">
-                ルームを作成
-              </Typography>
-              <div className={classes.form}>
-                <TextField
-                  id="adminName"
-                  label="名前"
-                  value={adminName}
-                  fullWidth
-                  onChange={handleAdminNameChange}
-                  variant="outlined"
-                  className={classes.input}
-                />
-                <TextField
-                  id="roomName"
-                  label="ルーム名"
-                  value={roomName}
-                  fullWidth
-                  onChange={handleRoomNameChange}
-                  variant="outlined"
-                  className={classes.input}
-                />
-                <TextField
-                  id="roomDescription"
-                  label="ルーム詳細"
-                  multiline
-                  rows={3}
-                  value={roomDescription}
-                  fullWidth
-                  onChange={handleDescriptionChange}
-                  variant="outlined"
-                  className={classes.input}
-                />
-                <Grid container>
-                  <Grid item container className={classes.input}>
-                    <InputLabel id="demo-simple-select-label">
-                      カテゴリ選択
-                    </InputLabel>
-                  </Grid>
-                  <Grid>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={roomCategory}
-                      required
-                      onClick={handleRoomCategoryChange}
-                      style={{ width: 200 }}
-                    >
-                      {props.categories.map(
-                        (category: CategoryDocument, index: number) => (
-                          <MenuItem value={`${category.cid}`} key={index}>
-                            {category.name}
-                          </MenuItem>
-                        ),
-                      )}
-                    </Select>
-                  </Grid>
+          <div className={classes.paper}>
+            <Typography component="h1" variant="h5">
+              ルームを作成
+            </Typography>
+            <div className={classes.form}>
+              <TextField
+                id="adminName"
+                label="管理者名"
+                value={adminName}
+                fullWidth
+                onChange={handleAdminNameChange}
+                variant="outlined"
+                className={classes.input}
+              />
+              <TextField
+                id="roomName"
+                label="ルーム名"
+                value={roomName}
+                fullWidth
+                onChange={handleRoomNameChange}
+                variant="outlined"
+                className={classes.input}
+              />
+              <TextField
+                id="roomDescription"
+                label="ルーム詳細"
+                multiline
+                rows={3}
+                value={roomDescription}
+                fullWidth
+                onChange={handleDescriptionChange}
+                variant="outlined"
+                className={classes.input}
+              />
+              <Grid container>
+                <Grid item container className={classes.input}>
+                  <InputLabel id="demo-simple-select-label">
+                    カテゴリ選択
+                  </InputLabel>
                 </Grid>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                  fullWidth
-                  onClick={createRoom}
-                  className={classes.submit}
-                >
-                  作成
-                </Button>
-              </div>
+                <Grid>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={roomCategory}
+                    required
+                    onClick={handleRoomCategoryChange}
+                    style={{ width: 200 }}
+                  >
+                    {props.categories.map(
+                      (category: CategoryDocument, index: number) => (
+                        <MenuItem value={`${category.cid}`} key={index}>
+                          {category.name}
+                        </MenuItem>
+                      ),
+                    )}
+                  </Select>
+                </Grid>
+              </Grid>
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                fullWidth
+                onClick={createRoom}
+                className={classes.submit}
+              >
+                作成
+              </Button>
             </div>
-          )}
+          </div>
         </Card>
       </Container>
     </Layout>
