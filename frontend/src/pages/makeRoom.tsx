@@ -32,6 +32,9 @@ type makeRoomProps = {
 };
 
 const useStyles = makeStyles((theme) => ({
+  container: {
+    marginTop: '14px',
+  },
   paper: {
     marginTop: theme.spacing(8),
     display: 'flex',
@@ -142,7 +145,7 @@ const makeRoom = (props: makeRoomProps) => {
 
   return (
     <Layout>
-      <Container component="main" maxWidth="xs">
+      <Container component="main" maxWidth="xs" className={classes.container}>
         <Card className={classes.panel}>
           {newRoomFlag ? (
             <div className={classes.paper}>
