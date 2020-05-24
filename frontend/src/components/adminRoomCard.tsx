@@ -60,7 +60,7 @@ const AdminRoomCard = (props: CardProps) => {
                 </Link>
                 <Button
                   variant="contained"
-                  color="primary"
+                  color="secondary"
                   className={classes.rightRoom}
                   onClick={() => {
                     deleteRoomDocument(props.children.cid, props.children.rid);
