@@ -74,7 +74,7 @@ const Layout = (props: LayoutProps) => {
           )}
         </Toolbar>
       </AppBar>
-      <div className={classes.marginContainer}>{props.children}</div>
+      {props.children}
     </div>
   );
 };

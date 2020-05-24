@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../../components/layout';
 import RoomCard from '../../components/roomCard';
-import { Grid, Container } from '@material-ui/core';
+import {Grid, Container, makeStyles} from '@material-ui/core';
 import { RoomCardProp } from '../../database/model';
 import { getRoomCardProps } from '../../database/index';
 import AdminRoomCard from '../../components/adminRoomCard';
@@ -12,7 +12,14 @@ interface CategoryProps {
   roomCards: RoomCardProp[];
 }
 
+const useStyles = makeStyles({
+  container: {
+    marginTop: '14px',
+  },
+});
+
 const Categories = (props) => {
+  const classes = useStyles();
   const [currentUser, setCurrentUser] = useState<firebase.User>();
   const [roomCards, setRoomCards] = useState<Array<RoomCardProp>>([]);
   const router = useRouter();
@@ -34,7 +41,7 @@ const Categories = (props) => {
 
   return (
     <Layout>
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" className={classes.container}>
         <Grid container>
           {roomCards.map((roomCard: RoomCardProp, index: number) => {
             if (currentUser && currentUser.uid === roomCard.adminUid)

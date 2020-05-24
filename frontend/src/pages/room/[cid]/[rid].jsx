@@ -277,7 +277,7 @@ const Room = (props) => {
 
   return (
     <Layout>
-      <Container maxWidth="xl" className={classes.rootContainer}>
+      <Container maxWidth="lg" className={classes.rootContainer}>
         <Card>
           <GridList
             cellHeight="90vh"
@@ -309,7 +309,7 @@ const Room = (props) => {
               variant="contained"
               id="js-leave-trigger"
               onClick={LeaveTriggerClick}
-              color="primary"
+              color="secondary"
             >
               退出する
             </Button>

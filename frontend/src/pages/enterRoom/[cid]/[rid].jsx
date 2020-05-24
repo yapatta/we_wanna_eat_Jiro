@@ -31,6 +31,9 @@ const useStyles = makeStyles((theme) => ({
   panel: {
     padding: '12px',
   },
+  container: {
+    marginTop: '14px',
+  },
 }));
 
 const enterRoom = (props) => {
@@ -89,7 +92,7 @@ const enterRoom = (props) => {
 
   return (
     <Layout>
-      <Container component="main" maxWidth="xs">
+      <Container component="main" maxWidth="xs" className={classes.container}>
         <Card className={classes.panel}>
           <div className={classes.paper}>
             <Typography component="h1" variant="h5">
