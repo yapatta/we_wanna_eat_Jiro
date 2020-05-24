@@ -90,7 +90,6 @@ const Room = (props) => {
     if (user) {
       setCurrentUser(user);
     } else {
-      setCurrentUser(null);
       const urls = location.pathname.split('/');
       router.push(
           `/enterRoom/${urls[urls.length - 2]}/${urls[urls.length - 1]}`,
