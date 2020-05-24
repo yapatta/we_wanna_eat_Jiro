@@ -134,7 +134,7 @@ const makeRoom = (props: makeRoomProps) => {
 
   useEffect(() => {
     (async () => {
-      if (roomUUID !== '') {
+      if (!!roomUUID) {
         window.location.href = `../../enterRoom/${roomCategory}/${roomUUID}`;
       }
     })();
