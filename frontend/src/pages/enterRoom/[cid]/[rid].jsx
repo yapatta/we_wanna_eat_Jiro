@@ -10,7 +10,7 @@ import {
 import { getCurrentUser } from '../../../firebase/Authentication';
 import { selectUser, updateUsername } from '../../../database';
 import Layout from '../../../components/layout';
-import firebase from '../../../plugins/firebase';
+import firebase from "../../../plugins/firebase";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
