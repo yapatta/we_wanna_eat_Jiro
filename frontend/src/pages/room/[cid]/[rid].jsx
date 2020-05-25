@@ -92,12 +92,10 @@ const Room = (props) => {
     } else {
       const urls = location.pathname.split('/');
       router.push(
-          `/enterRoom/${urls[urls.length - 2]}/${urls[urls.length - 1]}`,
+        `/enterRoom/${urls[urls.length - 2]}/${urls[urls.length - 1]}`,
       );
     }
   });
-
-
 
   const handleUserNameChange = (event) => {
     setUserName(event.target.value);
@@ -272,7 +270,7 @@ const Room = (props) => {
 
   useEffect(() => {
     (async () => {
-      if(!!currentUser) {
+      if (!!currentUser) {
         await setUpUsernameInput();
         await setUpRoomInfo();
         setPeer(new Peer(currentUser.uid, { key: SKYWAY_API_KEY }));

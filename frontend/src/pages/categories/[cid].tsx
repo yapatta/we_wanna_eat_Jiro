@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../../components/layout';
 import RoomCard from '../../components/roomCard';
-import {Grid, Container, makeStyles} from '@material-ui/core';
+import { Grid, Container, makeStyles } from '@material-ui/core';
 import { RoomCardProp } from '../../database/model';
 import { getRoomCardProps } from '../../database/index';
 import AdminRoomCard from '../../components/adminRoomCard';

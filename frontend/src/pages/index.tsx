@@ -3,7 +3,7 @@ import fetch from 'isomorphic-unfetch';
 import { API_PATH } from '../env';
 import Layout from '../components/layout';
 import CategoryCard from '../components/categoryCard';
-import {Card, CardMedia, Grid, makeStyles} from '@material-ui/core';
+import { Card, CardMedia, Grid, makeStyles } from '@material-ui/core';
 import { selectCategories } from '../database';
 import { CategoryDocument } from '../database/model';
 import { Container } from '@material-ui/core';
