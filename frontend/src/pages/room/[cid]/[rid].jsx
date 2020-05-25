@@ -85,15 +85,13 @@ const Room = (props) => {
 
   const router = useRouter();
   const roomId = router.query.rid;
+  const cid = router.query.cid;
 
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       setCurrentUser(user);
     } else {
-      const urls = location.pathname.split('/');
-      router.push(
-        `/enterRoom/${urls[urls.length - 2]}/${urls[urls.length - 1]}`,
-      );
+      router.push(`/enterRoom/${cid}/${roomId}`);
     }
   });
 
@@ -105,19 +103,14 @@ const Room = (props) => {
     // 退出処理
     const user = await getCurrentUser();
     const userDocument = await selectUser(user.uid);
-    const urls = location.pathname.split('/');
-    await updateRoomDocumentWhenLeaved(
-      Number(urls[urls.length - 2]),
-      urls[urls.length - 1],
-      userDocument,
-    );
+    await updateRoomDocumentWhenLeaved(Number(cid), roomId, userDocument);
 
     await localStreamOff();
 
     if (flag) {
       router.push('/');
     } else {
-      router.push(`/categories/${urls[urls.length - 2]}`);
+      router.push(`/categories/${cid}`);
     }
   };
 
@@ -129,12 +122,7 @@ const Room = (props) => {
     // 入室処理
     const user = await getCurrentUser();
     const userDocument = await selectUser(user.uid);
-    const urls = location.pathname.split('/');
-    await updateRoomDocumentWhenJoined(
-      Number(urls[urls.length - 2]),
-      urls[urls.length - 1],
-      userDocument,
-    );
+    await updateRoomDocumentWhenJoined(Number(cid), roomId, userDocument);
 
     const room = peer.joinRoom(roomId, {
       mode: 'mesh',
@@ -258,11 +246,7 @@ const Room = (props) => {
   };
 
   const setUpRoomInfo = async () => {
-    const urls = location.pathname.split('/');
-    const roomDoc = await selectRoomDocument(
-      Number(urls[urls.length - 2]),
-      urls[urls.length - 1],
-    );
+    const roomDoc = await selectRoomDocument(Number(cid), roomId);
     const rd = await roomDoc.get();
     console.log(rd.data().name);
     setRoomName(rd.data().name);
