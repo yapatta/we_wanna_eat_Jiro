@@ -1,6 +1,4 @@
 import React from 'react';
-import fetch from 'isomorphic-unfetch';
-import { API_PATH } from '../env';
 import Layout from '../components/layout';
 import CategoryCard from '../components/categoryCard';
 import { Card, CardMedia, Grid, makeStyles } from '@material-ui/core';
@@ -47,7 +45,6 @@ Index.getInitialProps = async ({ req }) => {
   const categoryDocuments = await selectCategories();
 
   // ルームの全てのカテゴリを取得
-  const res = await fetch(API_PATH + '/categories');
   const cats = await categoryDocuments.get();
   const categories: CategoryDocument[] = [];
   cats.forEach((doc) => {
